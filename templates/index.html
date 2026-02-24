@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Pesticide Detect System</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Smart Pest Detection</h1>
+      <p class="subtitle">Upload a photo of a plant to detect pests.</p>
+
+      <div class="upload-section">
+        <input type="file" id="imageInput" accept="image/*" />
+        <label for="imageInput" class="file-label">Choose Image</label>
+        <button id="uploadBtn" disabled>Detect Pests</button>
+      </div>
+
+      <div id="loading" class="hidden">
+        <div class="spinner"></div>
+        <p>Processing image... please wait.</p>
+      </div>
+
+      <div class="results-container hidden" id="resultsArea">
+        <div class="image-box">
+          <h3>Original Image</h3>
+          <img id="originalImage" src="" alt="Original Upload" />
+        </div>
+        <div class="image-box">
+          <h3>Detection Result</h3>
+          <img id="resultImage" src="" alt="Detection Result" />
+        </div>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+  </body>
+</html>
