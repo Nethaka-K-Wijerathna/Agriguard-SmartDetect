@@ -11,21 +11,23 @@
   </head>
   <body>
     <div class="container">
-      <h1>Smart Pest Detection</h1>
-      <p class="subtitle">Upload a photo of a plant to detect pests.</p>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <h1>Smart Pest Detection</h1>
+          <p class="subtitle">Quickly upload a plant photo to detect pests.</p>
+        </div>
+        <div class="meta" id="fileMeta">No file selected</div>
+      </div>
 
       <div class="upload-section">
         <input type="file" id="imageInput" accept="image/*" />
-        <label for="imageInput" class="file-label">Choose Image</label>
+        <label for="imageInput" class="file-label">📁 Choose Image</label>
         <button id="uploadBtn" disabled>Detect Pests</button>
+        <div style="flex:1"></div>
+        <div class="meta" id="hint">Supported: JPG, PNG — try clear photos for best results</div>
       </div>
 
-      <div id="loading" class="hidden">
-        <div class="spinner"></div>
-        <p>Processing image... please wait.</p>
-      </div>
-
-      <div class="results-container hidden" id="resultsArea">
+      <div id="resultsArea" class="results-container hidden">
         <div class="image-box">
           <h3>Original Image</h3>
           <img id="originalImage" src="" alt="Original Upload" />
@@ -33,7 +35,15 @@
         <div class="image-box">
           <h3>Detection Result</h3>
           <img id="resultImage" src="" alt="Detection Result" />
+          <p class="meta" id="resultInfo"></p>
         </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="overlay">
+      <div class="card">
+        <div class="spinner"></div>
+        <div class="meta">Processing image — this may take a few seconds</div>
       </div>
     </div>
 

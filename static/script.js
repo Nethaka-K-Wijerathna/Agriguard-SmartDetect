@@ -4,11 +4,16 @@ const resultsArea = document.getElementById("resultsArea");
 const originalImage = document.getElementById("originalImage");
 const resultImage = document.getElementById("resultImage");
 const loading = document.getElementById("loading");
+const overlay = document.getElementById("overlay");
+const fileMeta = document.getElementById("fileMeta");
+const resultInfo = document.getElementById("resultInfo");
 
 // 1. When a user selects a file, enable the upload button and show preview
 imageInput.addEventListener("change", function () {
   if (this.files && this.files[0]) {
     uploadBtn.disabled = false;
+    // update filename meta
+    fileMeta.textContent = this.files[0].name;
 
     // Show a preview of the selected image immediately
     const reader = new FileReader();
@@ -16,6 +21,7 @@ imageInput.addEventListener("change", function () {
       originalImage.src = e.target.result;
       resultsArea.classList.remove("hidden");
       resultImage.src = ""; // Clear previous result
+      resultInfo.textContent = "";
     };
     reader.readAsDataURL(this.files[0]);
   }
@@ -31,7 +37,7 @@ uploadBtn.addEventListener("click", function () {
   formData.append("image", file);
 
   // Show UI states
-  loading.classList.remove("hidden");
+  overlay.classList.add("active");
   uploadBtn.disabled = true;
   resultImage.style.opacity = "0.3"; // Dim result area while loading
 
@@ -44,16 +50,21 @@ uploadBtn.addEventListener("click", function () {
     .then((data) => {
       console.log("Success:", data);
       // Update the result image source with the URL provided by Flask
-      resultImage.src = data.result_image_url;
-      resultImage.style.opacity = "1";
+      if (data && data.result_image_url) {
+        resultImage.src = data.result_image_url;
+        resultImage.style.opacity = "1";
+        resultInfo.textContent = `Updated: ${new Date().toLocaleTimeString()}`;
+      } else {
+        throw new Error('No result url returned');
+      }
     })
     .catch((error) => {
       console.error("Error:", error);
-      alert("An error occurred during detection.");
+      alert("An error occurred during detection. Check server logs.");
     })
     .finally(() => {
       // Hide loading state regardless of success/failure
-      loading.classList.add("hidden");
+      overlay.classList.remove("active");
       uploadBtn.disabled = false;
     });
 });

@@ -59,18 +59,41 @@ def detect():
         # conf=0.5 sets the confidence threshold to 50%
         results = model.predict(source=upload_path, save=True, conf=0.5, project=app.config['RESULT_FOLDER'], name='latest_run', exist_ok=True)
         
-        # YOLO saves results in a subdirectory. We need to find the actual saved file.
-        # The standard save path is usually static/results/latest_run/temp_upload.jpg
-        predicted_image_path = os.path.join(app.config['RESULT_FOLDER'], 'latest_run', filename)
+        # YOLO may save results under runs/detect/..., not directly under our static folder.
+        # Search the repository for the saved file and copy it into our configured static results folder.
+        import glob, shutil, time
 
-        print(f"Detection complete. Saved to: {predicted_image_path}")
+        # Try to find where the model actually saved the file (search under runs/)
+        matches = glob.glob(os.path.join('runs', '**', filename), recursive=True)
 
-        # 3. Construct the URL for the frontend to access the result image
-        # We tell the browser to look in the static folder for the result
-        result_url = url_for('static', filename=f'results/latest_run/{filename}')
-        
+        if matches:
+            # Prefer the most recent match
+            saved_path = matches[-1]
+            dest_dir = os.path.join(app.config['RESULT_FOLDER'], 'latest_run')
+            os.makedirs(dest_dir, exist_ok=True)
+            dest_path = os.path.join(dest_dir, filename)
+            try:
+                shutil.copy(saved_path, dest_path)
+                print(f"Copied result from {saved_path} to {dest_path}")
+            except Exception as e:
+                print(f"Error copying result: {e}")
+                # fallback to the original saved path if copy fails
+                dest_path = saved_path
+        else:
+            # If we didn't find it, assume the model saved into our static results path
+            dest_path = os.path.join(app.config['RESULT_FOLDER'], 'latest_run', filename)
+
+        print(f"Detection complete. Final image path: {dest_path}")
+
+        # Build a URL relative to the `static` folder so Flask can serve it
+        try:
+            rel = os.path.relpath(dest_path, 'static').replace('\\', '/')
+            result_url = url_for('static', filename=rel)
+        except Exception:
+            # If building the URL fails, fallback to the previously expected path
+            result_url = url_for('static', filename=f'results/latest_run/{filename}')
+
         # append a timestamp to prevent browser caching of the image
-        import time
         result_url += f"?t={int(time.time())}"
 
         return {'result_image_url': result_url}
