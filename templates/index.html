@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Smart Pesticide Detect System</title>
+    <title>Agriguard SmartDetect - Pest Detection System</title>
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='style.css') }}"
@@ -11,41 +11,55 @@
   </head>
   <body>
     <div class="container">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div>
-          <h1>Smart Pest Detection</h1>
-          <p class="subtitle">Quickly upload a plant photo to detect pests.</p>
+      <div class="header-section">
+        <div class="brand">
+          <h1 class="brand-title">🌾 Agriguard SmartDetect</h1>
+          <p class="subtitle">AI-Powered Pest Detection for Better Crop Protection</p>
         </div>
-        <div class="meta" id="fileMeta">No file selected</div>
+      </div>
+      <div class="introduction">
+        <p>Upload a photo or use live camera feed for real-time pest detection and management suggestions.</p>
+      </div>
+      <!-- live and photo detection sections separated -->
+
+      <div class="live-section card" id="liveSection">
+        <h2>📷 Live Camera</h2>
+        <div class="video-box">
+          <img id="liveStream" src="/video_feed" alt="Live stream" />
+        </div>
+        <div class="controls">
+          <button id="toggleStream">Pause Stream</button>
+          <span id="streamType" class="meta">MJPEG</span>
+        </div>
+        <div class="live-info card">
+          <h3>Detections & Suggestions</h3>
+          <div id="detList" class="meta">No detections yet.</div>
+          <div class="meta"><strong>Suggested:</strong> <span id="suggestion">—</span></div>
+          <div id="detTime" class="meta">Updated: —</div>
+        </div>
       </div>
 
-      <div class="upload-section">
-        <input type="file" id="imageInput" accept="image/*" />
-        <label for="imageInput" class="file-label">📁 Choose Image</label>
-        <button id="uploadBtn" disabled>Detect Pests</button>
-        <div style="flex:1"></div>
-        <div class="meta" id="hint">Supported: JPG, PNG — try clear photos for best results</div>
-      </div>
-
-      <div id="resultsArea" class="results-container hidden">
-        <div class="image-box">
-          <h3>Original Image</h3>
-          <img id="originalImage" src="" alt="Original Upload" />
+      <div class="photo-section card" id="photoSection">
+        <h2>🖼️ Photo Detection</h2>
+        <div class="upload-section">
+          <input type="file" id="imageInput" accept="image/*" />
+          <label for="imageInput" class="file-label">📁 Choose Image</label>
+          <button id="uploadBtn" disabled>Detect Photo</button>
         </div>
-        <div class="image-box">
-          <h3>Detection Result</h3>
-          <img id="resultImage" src="" alt="Detection Result" />
-          <p class="meta" id="resultInfo"></p>
+        <div id="resultsArea" class="results-container hidden">
+          <div class="image-box">
+            <h4>Original Image</h4>
+            <img id="originalImage" src="" alt="Original Upload" />
+          </div>
+          <div class="image-box">
+            <h4>Detection Result</h4>
+            <img id="resultImage" src="" alt="Detection Result" />
+            <p class="meta" id="resultInfo"></p>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="overlay" id="overlay">
-      <div class="card">
-        <div class="spinner"></div>
-        <div class="meta">Processing image — this may take a few seconds</div>
-      </div>
-    </div>
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
   </body>
