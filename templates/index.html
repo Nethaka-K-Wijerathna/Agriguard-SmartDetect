@@ -1,0 +1,911 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>AgriGuard · Smart Pest Detection</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ── Reset & Variables ─────────────────────────── */
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      :root {
+        --bg: #070b14;
+        --bg2: #0d1321;
+        --card: rgba(255, 255, 255, 0.04);
+        --border: rgba(255, 255, 255, 0.07);
+        --glass: rgba(255, 255, 255, 0.02);
+        --green: #22c55e;
+        --green2: #16a34a;
+        --green-glow: rgba(34, 197, 94, 0.25);
+        --lime: #a3e635;
+        --red: #ef4444;
+        --amber: #f59e0b;
+        --blue: #3b82f6;
+        --txt: #e4e4e7;
+        --txt2: #a1a1aa;
+        --txt3: #71717a;
+        --radius: 16px;
+        --radius-sm: 10px;
+        --font: "Inter", system-ui, -apple-system, sans-serif;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: var(--font);
+        background: var(--bg);
+        color: var(--txt);
+        min-height: 100vh;
+        overflow-x: hidden;
+        line-height: 1.6;
+      }
+
+      /* ── Animated BG blobs ─────────────────────────── */
+      body::before,
+      body::after {
+        content: "";
+        position: fixed;
+        border-radius: 50%;
+        filter: blur(120px);
+        opacity: 0.15;
+        z-index: 0;
+        pointer-events: none;
+      }
+      body::before {
+        width: 600px;
+        height: 600px;
+        background: var(--green);
+        top: -200px;
+        left: -100px;
+      }
+      body::after {
+        width: 500px;
+        height: 500px;
+        background: var(--blue);
+        bottom: -150px;
+        right: -80px;
+      }
+
+      /* ── Utility ───────────────────────────────────── */
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 24px;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* ── Navbar ────────────────────────────────────── */
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(7, 11, 20, 0.72);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--border);
+        padding: 0 24px;
+      }
+      nav .inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 64px;
+      }
+      nav .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 800;
+        font-size: 1.25rem;
+        letter-spacing: -0.5px;
+        color: #fff;
+        text-decoration: none;
+      }
+      nav .logo span {
+        background: linear-gradient(135deg, var(--green), var(--lime));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      nav .logo svg {
+        width: 28px;
+        height: 28px;
+        fill: var(--green);
+      }
+      nav .badge {
+        font-size: 0.65rem;
+        padding: 3px 10px;
+        border-radius: 20px;
+        background: var(--green-glow);
+        color: var(--green);
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+
+      /* ── Hero ──────────────────────────────────────── */
+      .hero {
+        text-align: center;
+        padding: 72px 0 40px;
+      }
+      .hero h1 {
+        font-size: clamp(2rem, 5vw, 3.4rem);
+        font-weight: 900;
+        letter-spacing: -1.5px;
+        line-height: 1.15;
+        margin-bottom: 16px;
+      }
+      .hero h1 .gr {
+        background: linear-gradient(135deg, var(--green), var(--lime));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .hero p {
+        color: var(--txt2);
+        font-size: 1.1rem;
+        max-width: 560px;
+        margin: 0 auto;
+      }
+
+      /* ── Mode Tabs ─────────────────────────────────── */
+      .tabs-wrap {
+        display: flex;
+        justify-content: center;
+        margin: 40px 0 32px;
+      }
+      .tabs {
+        display: inline-flex;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 60px;
+        padding: 5px;
+        gap: 4px;
+      }
+      .tabs button {
+        border: none;
+        background: transparent;
+        color: var(--txt2);
+        font-family: var(--font);
+        font-weight: 600;
+        font-size: 0.92rem;
+        padding: 10px 28px;
+        border-radius: 54px;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+      .tabs button:hover {
+        color: #fff;
+      }
+      .tabs button.active {
+        background: var(--green);
+        color: #fff;
+        box-shadow: 0 0 24px var(--green-glow);
+      }
+
+      /* ── Panels ────────────────────────────────────── */
+      .panel {
+        display: none;
+        animation: fadeUp 0.4s ease;
+      }
+      .panel.active {
+        display: block;
+      }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ── Upload Panel ──────────────────────────────── */
+      .upload-zone {
+        max-width: 640px;
+        margin: 0 auto;
+        border: 2px dashed var(--border);
+        border-radius: var(--radius);
+        padding: 56px 32px;
+        text-align: center;
+        cursor: pointer;
+        transition: 0.35s;
+        position: relative;
+        background: var(--glass);
+      }
+      .upload-zone:hover,
+      .upload-zone.drag {
+        border-color: var(--green);
+        background: rgba(34, 197, 94, 0.04);
+        box-shadow: 0 0 40px rgba(34, 197, 94, 0.08);
+      }
+      .upload-zone svg {
+        width: 52px;
+        height: 52px;
+        stroke: var(--txt3);
+        margin-bottom: 16px;
+        transition: 0.3s;
+      }
+      .upload-zone:hover svg {
+        stroke: var(--green);
+      }
+      .upload-zone h3 {
+        font-size: 1.15rem;
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+      .upload-zone p {
+        color: var(--txt3);
+        font-size: 0.88rem;
+      }
+      .upload-zone input {
+        display: none;
+      }
+      .preview-wrap {
+        max-width: 640px;
+        margin: 20px auto 0;
+        display: none;
+        text-align: center;
+      }
+      .preview-wrap img {
+        max-width: 100%;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: var(--font);
+        font-weight: 600;
+        font-size: 0.95rem;
+        padding: 12px 32px;
+        border: none;
+        border-radius: 54px;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+      .btn-primary {
+        background: var(--green);
+        color: #fff;
+        margin-top: 20px;
+        box-shadow: 0 4px 24px var(--green-glow);
+      }
+      .btn-primary:hover {
+        background: var(--green2);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 32px var(--green-glow);
+      }
+      .btn-outline {
+        background: transparent;
+        border: 1.5px solid var(--border);
+        color: var(--txt);
+        margin-top: 20px;
+      }
+      .btn-outline:hover {
+        border-color: var(--green);
+        color: var(--green);
+      }
+
+      /* ── Camera Panel ──────────────────────────────── */
+      .cam-container {
+        display: flex;
+        gap: 24px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .cam-feed {
+        flex: 1 1 640px;
+        max-width: 640px;
+        position: relative;
+      }
+      .cam-feed .placeholder,
+      .cam-feed img {
+        width: 100%;
+        aspect-ratio: 4/3;
+        object-fit: cover;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        background: var(--bg2);
+      }
+      .cam-feed .placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: var(--txt3);
+        gap: 12px;
+      }
+      .cam-feed .live-dot {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        display: none;
+        align-items: center;
+        gap: 6px;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 5px 14px;
+        border-radius: 40px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--red);
+      }
+      .cam-feed .live-dot i {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--red);
+        animation: pulse 1s infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.3;
+        }
+      }
+      .cam-sidebar {
+        flex: 1 1 280px;
+        max-width: 360px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .cam-sidebar .empty-state {
+        text-align: center;
+        color: var(--txt3);
+        padding: 40px 0;
+        font-size: 0.9rem;
+      }
+      .cam-btns {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 16px;
+      }
+
+      /* ── Loader Overlay ────────────────────────────── */
+      .loader-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 200;
+        background: rgba(7, 11, 20, 0.85);
+        backdrop-filter: blur(8px);
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 24px;
+      }
+      .loader-overlay.show {
+        display: flex;
+      }
+      .spinner {
+        width: 56px;
+        height: 56px;
+        border: 4px solid var(--border);
+        border-top-color: var(--green);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .loader-overlay p {
+        color: var(--txt2);
+        font-size: 1rem;
+        font-weight: 500;
+        animation: fadeInOut 1.5s ease-in-out infinite;
+      }
+      @keyframes fadeInOut {
+        0%,
+        100% {
+          opacity: 0.5;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+
+      /* ── Results Section ───────────────────────────── */
+      .results {
+        margin: 48px auto;
+        max-width: 1200px;
+        display: none;
+        animation: fadeUp 0.5s ease;
+      }
+      .results.show {
+        display: block;
+      }
+      .results h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .results h2 .count {
+        font-size: 0.85rem;
+        padding: 4px 14px;
+        border-radius: 20px;
+        background: var(--green-glow);
+        color: var(--green);
+        font-weight: 600;
+      }
+      .result-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+      }
+      @media (max-width: 860px) {
+        .result-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .result-image {
+        border-radius: var(--radius);
+        overflow: hidden;
+        border: 1px solid var(--border);
+        background: var(--bg2);
+      }
+      .result-image img {
+        width: 100%;
+        display: block;
+      }
+      .det-cards {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      /* ── Detection Card ────────────────────────────── */
+      .det-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 18px 20px;
+        transition: 0.3s;
+      }
+      .det-card:hover {
+        border-color: rgba(34, 197, 94, 0.3);
+        background: rgba(34, 197, 94, 0.04);
+      }
+      .det-card .top {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 10px;
+      }
+      .det-card .pest-name {
+        font-weight: 700;
+        font-size: 1.02rem;
+        text-transform: capitalize;
+      }
+      .det-card .pest-count {
+        font-size: 0.78rem;
+        padding: 3px 10px;
+        border-radius: 20px;
+        background: rgba(239, 68, 68, 0.12);
+        color: var(--red);
+        font-weight: 600;
+      }
+      .det-card .conf-bar {
+        height: 4px;
+        border-radius: 4px;
+        background: var(--border);
+        margin-bottom: 12px;
+        overflow: hidden;
+      }
+      .det-card .conf-fill {
+        height: 100%;
+        border-radius: 4px;
+        background: linear-gradient(90deg, var(--green), var(--lime));
+        transition: width 0.6s ease;
+      }
+      .det-card .meta {
+        display: flex;
+        gap: 16px;
+        font-size: 0.82rem;
+        color: var(--txt2);
+      }
+      .det-card .meta strong {
+        color: var(--txt);
+        font-weight: 600;
+      }
+      .det-card .pesticide {
+        margin-top: 10px;
+        padding: 8px 14px;
+        border-radius: 8px;
+        background: rgba(34, 197, 94, 0.08);
+        border: 1px solid rgba(34, 197, 94, 0.15);
+        font-size: 0.85rem;
+        color: var(--green);
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .no-det {
+        text-align: center;
+        color: var(--txt3);
+        padding: 40px 0;
+        font-size: 1rem;
+      }
+      .no-det svg {
+        width: 48px;
+        height: 48px;
+        stroke: var(--txt3);
+        margin-bottom: 12px;
+      }
+
+      /* ── Footer ────────────────────────────────────── */
+      footer {
+        text-align: center;
+        padding: 48px 24px 32px;
+        color: var(--txt3);
+        font-size: 0.82rem;
+        border-top: 1px solid var(--border);
+        margin-top: 64px;
+      }
+      footer a {
+        color: var(--green);
+        text-decoration: none;
+      }
+
+      /* ── Responsive ────────────────────────────────── */
+      @media (max-width: 640px) {
+        .hero h1 {
+          font-size: 1.8rem;
+        }
+        .hero p {
+          font-size: 0.95rem;
+        }
+        .tabs button {
+          padding: 8px 18px;
+          font-size: 0.82rem;
+        }
+        .upload-zone {
+          padding: 40px 20px;
+        }
+        .cam-container {
+          flex-direction: column;
+        }
+        .cam-sidebar {
+          max-width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ── Navbar ──────────────────────────────────── -->
+    <nav>
+      <div class="inner">
+        <a href="/" class="logo">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10
+     10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93
+     0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54
+     c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2
+     c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41
+     c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"
+            />
+          </svg>
+          <span>AgriGuard</span>
+        </a>
+        <span class="badge">AI PEST DETECTION</span>
+      </div>
+    </nav>
+
+    <!-- ── Hero ────────────────────────────────────── -->
+    <section class="hero container">
+      <h1>Identify Pests.<br /><span class="gr">Protect Crops.</span></h1>
+      <p>
+        Upload a photo or start your camera — our AI detects pests instantly and
+        recommends the right treatment.
+      </p>
+    </section>
+
+    <!-- ── Mode Tabs ───────────────────────────────── -->
+    <div class="tabs-wrap container">
+      <div class="tabs">
+        <button class="active" data-tab="upload">📷 Upload Image</button>
+        <button data-tab="camera">🎥 Live Camera</button>
+      </div>
+    </div>
+
+    <!-- ── Upload Panel ────────────────────────────── -->
+    <div class="container">
+      <div id="panel-upload" class="panel active">
+        <div class="upload-zone" id="dropZone">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25
+        2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
+            />
+          </svg>
+          <h3>Drag & drop your image here</h3>
+          <p>or click to browse · JPG, PNG, WEBP</p>
+          <input type="file" id="fileInput" accept="image/*" />
+        </div>
+        <div class="preview-wrap" id="previewWrap">
+          <img id="previewImg" src="" alt="Preview" />
+          <br />
+          <button class="btn btn-primary" id="analyzeBtn">
+            🔍 Analyze Pest
+          </button>
+          <button class="btn btn-outline" id="clearBtn">✕ Clear</button>
+        </div>
+      </div>
+
+      <!-- ── Camera Panel ───────────────────────────── -->
+      <div id="panel-camera" class="panel">
+        <div class="cam-container">
+          <div class="cam-feed">
+            <div class="placeholder" id="camPlaceholder">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="48"
+                height="48"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="1.5"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0
+           1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0
+           2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25
+           0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z"
+                />
+              </svg>
+              <span>Camera feed will appear here</span>
+            </div>
+            <img id="camStream" src="" alt="Camera" style="display: none" />
+            <div class="live-dot" id="liveDot"><i></i> LIVE</div>
+          </div>
+          <div class="cam-sidebar" id="camSidebar">
+            <div class="empty-state" id="camEmpty">
+              Start the camera to begin real-time pest detection.
+            </div>
+          </div>
+        </div>
+        <div class="cam-btns">
+          <button class="btn btn-primary" id="startCam">▶ Start Camera</button>
+          <button class="btn btn-outline" id="stopCam" style="display: none">
+            ■ Stop
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Results (for upload mode) ───────────────── -->
+    <section class="results container" id="resultsSection">
+      <h2>Detection Results <span class="count" id="resCount"></span></h2>
+      <div class="result-grid">
+        <div class="result-image">
+          <img id="resultImg" src="" alt="Result" />
+        </div>
+        <div class="det-cards" id="detCards"></div>
+      </div>
+    </section>
+
+    <!-- ── Loader ──────────────────────────────────── -->
+    <div class="loader-overlay" id="loader">
+      <div class="spinner"></div>
+      <p>Analyzing image for pests…</p>
+    </div>
+
+    <!-- ── Footer ──────────────────────────────────── -->
+    <footer class="container">
+      AgriGuard SmartDetect &copy; 2026 · Built with YOLOv8 &amp; Flask
+    </footer>
+
+    <script>
+      /* ── Tab Switching ────────────────────────────── */
+      const tabs = document.querySelectorAll(".tabs button");
+      const panels = document.querySelectorAll(".panel");
+      tabs.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          tabs.forEach((b) => b.classList.remove("active"));
+          panels.forEach((p) => p.classList.remove("active"));
+          btn.classList.add("active");
+          document
+            .getElementById("panel-" + btn.dataset.tab)
+            .classList.add("active");
+        });
+      });
+
+      /* ── Upload / Drag-Drop ──────────────────────── */
+      const dropZone = document.getElementById("dropZone");
+      const fileInput = document.getElementById("fileInput");
+      const previewWrap = document.getElementById("previewWrap");
+      const previewImg = document.getElementById("previewImg");
+      const analyzeBtn = document.getElementById("analyzeBtn");
+      const clearBtn = document.getElementById("clearBtn");
+      let selectedFile = null;
+
+      dropZone.addEventListener("click", () => fileInput.click());
+      dropZone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropZone.classList.add("drag");
+      });
+      dropZone.addEventListener("dragleave", () =>
+        dropZone.classList.remove("drag"),
+      );
+      dropZone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropZone.classList.remove("drag");
+        if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+      });
+      fileInput.addEventListener("change", () => {
+        if (fileInput.files.length) handleFile(fileInput.files[0]);
+      });
+
+      function handleFile(file) {
+        selectedFile = file;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          previewImg.src = e.target.result;
+          previewWrap.style.display = "block";
+          dropZone.style.display = "none";
+        };
+        reader.readAsDataURL(file);
+      }
+      clearBtn.addEventListener("click", () => {
+        selectedFile = null;
+        fileInput.value = "";
+        previewWrap.style.display = "none";
+        dropZone.style.display = "block";
+        document.getElementById("resultsSection").classList.remove("show");
+      });
+
+      /* ── Analyze (Upload) ────────────────────────── */
+      analyzeBtn.addEventListener("click", async () => {
+        if (!selectedFile) return;
+        const loader = document.getElementById("loader");
+        loader.classList.add("show");
+        const form = new FormData();
+        form.append("image", selectedFile);
+        try {
+          const res = await fetch("/detect", { method: "POST", body: form });
+          const data = await res.json();
+          loader.classList.remove("show");
+          if (data.error) {
+            alert(data.error);
+            return;
+          }
+          showResults(data.result_image_url, data.detections);
+        } catch (err) {
+          loader.classList.remove("show");
+          alert("Detection failed: " + err.message);
+        }
+      });
+
+      function showResults(imgUrl, detections) {
+        document.getElementById("resultImg").src = imgUrl + "?t=" + Date.now();
+        const section = document.getElementById("resultsSection");
+        const cards = document.getElementById("detCards");
+        const counter = document.getElementById("resCount");
+        cards.innerHTML = "";
+        if (!detections.length) {
+          cards.innerHTML = `<div class="no-det">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg><p>No pests detected — crop looks healthy! 🌱</p></div>`;
+          counter.textContent = "0 pests";
+        } else {
+          let total = detections.reduce((s, d) => s + d.count, 0);
+          counter.textContent =
+            total + " pest" + (total > 1 ? "s" : "") + " found";
+          detections.forEach((d) => {
+            cards.innerHTML += `
+        <div class="det-card">
+          <div class="top">
+            <span class="pest-name">${d.name}</span>
+            <span class="pest-count">×${d.count}</span>
+          </div>
+          <div class="conf-bar"><div class="conf-fill" style="width:${d.confidence}%"></div></div>
+          <div class="meta">
+            <span>Confidence: <strong>${d.confidence}%</strong></span>
+          </div>
+          <div class="pesticide">💊 Recommended: <strong>${d.pesticide}</strong></div>
+        </div>`;
+          });
+        }
+        section.classList.add("show");
+        section.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
+      /* ── Live Camera ─────────────────────────────── */
+      const startBtn = document.getElementById("startCam");
+      const stopBtn = document.getElementById("stopCam");
+      const camStream = document.getElementById("camStream");
+      const camPlace = document.getElementById("camPlaceholder");
+      const liveDot = document.getElementById("liveDot");
+      const camSide = document.getElementById("camSidebar");
+      const camEmpty = document.getElementById("camEmpty");
+      let polling = null;
+
+      startBtn.addEventListener("click", () => {
+        camStream.src = "/video_feed";
+        camStream.style.display = "block";
+        camPlace.style.display = "none";
+        liveDot.style.display = "flex";
+        startBtn.style.display = "none";
+        stopBtn.style.display = "inline-flex";
+        camEmpty.style.display = "none";
+        polling = setInterval(pollDetections, 1200);
+      });
+
+      stopBtn.addEventListener("click", () => {
+        camStream.src = "";
+        camStream.style.display = "none";
+        camPlace.style.display = "flex";
+        liveDot.style.display = "none";
+        stopBtn.style.display = "none";
+        startBtn.style.display = "inline-flex";
+        clearInterval(polling);
+        camSide.innerHTML =
+          '<div class="empty-state" id="camEmpty">Camera stopped.</div>';
+      });
+
+      async function pollDetections() {
+        try {
+          const res = await fetch("/detections");
+          const data = await res.json();
+          renderCamCards(data.detections || []);
+        } catch (_) {}
+      }
+
+      function renderCamCards(dets) {
+        if (!dets.length) {
+          camSide.innerHTML =
+            '<div class="empty-state">Scanning… No pests detected yet.</div>';
+          return;
+        }
+        let html =
+          '<div style="font-weight:700;font-size:1rem;margin-bottom:8px">🔴 Live Detections</div>';
+        dets.forEach((d) => {
+          html += `
+      <div class="det-card">
+        <div class="top">
+          <span class="pest-name">${d.name}</span>
+          <span class="pest-count">×${d.count}</span>
+        </div>
+        <div class="conf-bar"><div class="conf-fill" style="width:${d.confidence}%"></div></div>
+        <div class="meta"><span>Confidence: <strong>${d.confidence}%</strong></span></div>
+        <div class="pesticide">💊 ${d.pesticide}</div>
+      </div>`;
+        });
+        camSide.innerHTML = html;
+      }
+    </script>
+  </body>
+</html>
