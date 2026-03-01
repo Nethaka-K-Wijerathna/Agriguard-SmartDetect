@@ -16,7 +16,7 @@ app = Flask(__name__)
 # ==========================================
 # 1. GEMINI AI SETUP
 # ==========================================
-GEMINI_API_KEY = "AIzaSyC6cwm-M9F-Rv0-XUuObHY3HRkn0A-dovM"
+GEMINI_API_KEY = ""
 genai.configure(api_key=GEMINI_API_KEY)
 
 working_model_name = "models/gemini-1.5-flash"
