@@ -9,7 +9,6 @@
       rel="stylesheet"
     />
     <style>
-      /* ── Reset & Variables ─────────────────────────── */
       *,
       *::before,
       *::after {
@@ -48,8 +47,6 @@
         overflow-x: hidden;
         line-height: 1.6;
       }
-
-      /* ── Animated BG blobs ─────────────────────────── */
       body::before,
       body::after {
         content: "";
@@ -74,8 +71,6 @@
         bottom: -150px;
         right: -80px;
       }
-
-      /* ── Utility ───────────────────────────────────── */
       .container {
         max-width: 1200px;
         margin: 0 auto;
@@ -83,8 +78,6 @@
         position: relative;
         z-index: 1;
       }
-
-      /* ── Navbar ────────────────────────────────────── */
       nav {
         position: sticky;
         top: 0;
@@ -131,8 +124,6 @@
         font-weight: 600;
         letter-spacing: 0.5px;
       }
-
-      /* ── Hero ──────────────────────────────────────── */
       .hero {
         text-align: center;
         padding: 72px 0 40px;
@@ -155,8 +146,6 @@
         max-width: 560px;
         margin: 0 auto;
       }
-
-      /* ── Mode Tabs ─────────────────────────────────── */
       .tabs-wrap {
         display: flex;
         justify-content: center;
@@ -190,8 +179,6 @@
         color: #fff;
         box-shadow: 0 0 24px var(--green-glow);
       }
-
-      /* ── Panels ────────────────────────────────────── */
       .panel {
         display: none;
         animation: fadeUp 0.4s ease;
@@ -209,8 +196,6 @@
           transform: translateY(0);
         }
       }
-
-      /* ── Upload Panel ──────────────────────────────── */
       .upload-zone {
         max-width: 640px;
         margin: 0 auto;
@@ -262,6 +247,13 @@
         border-radius: var(--radius);
         border: 1px solid var(--border);
       }
+      .scan-buttons {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 20px;
+      }
       .btn {
         display: inline-flex;
         align-items: center;
@@ -278,7 +270,6 @@
       .btn-primary {
         background: var(--green);
         color: #fff;
-        margin-top: 20px;
         box-shadow: 0 4px 24px var(--green-glow);
       }
       .btn-primary:hover {
@@ -286,18 +277,25 @@
         transform: translateY(-2px);
         box-shadow: 0 8px 32px var(--green-glow);
       }
+      .btn-deep {
+        background: var(--blue);
+        color: #fff;
+        box-shadow: 0 4px 24px rgba(59, 130, 246, 0.25);
+      }
+      .btn-deep:hover {
+        background: #2563eb;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3);
+      }
       .btn-outline {
         background: transparent;
         border: 1.5px solid var(--border);
         color: var(--txt);
-        margin-top: 20px;
       }
       .btn-outline:hover {
         border-color: var(--green);
         color: var(--green);
       }
-
-      /* ── Camera Panel ──────────────────────────────── */
       .cam-container {
         display: flex;
         gap: 24px;
@@ -375,8 +373,6 @@
         justify-content: center;
         margin-top: 16px;
       }
-
-      /* ── Loader Overlay ────────────────────────────── */
       .loader-overlay {
         display: none;
         position: fixed;
@@ -420,8 +416,6 @@
           opacity: 1;
         }
       }
-
-      /* ── Results Section ───────────────────────────── */
       .results {
         margin: 48px auto;
         max-width: 1200px;
@@ -483,8 +477,6 @@
         background: var(--border);
         border-radius: 4px;
       }
-
-      /* ── Detection Card ────────────────────────────── */
       .det-card {
         background: var(--card);
         border: 1px solid var(--border);
@@ -539,20 +531,6 @@
         color: var(--txt);
         font-weight: 600;
       }
-      .det-card .pesticide {
-        margin-top: 10px;
-        padding: 8px 14px;
-        border-radius: 8px;
-        background: rgba(34, 197, 94, 0.08);
-        border: 1px solid rgba(34, 197, 94, 0.15);
-        font-size: 0.85rem;
-        color: var(--green);
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }
-
       .no-det {
         text-align: center;
         color: var(--txt3);
@@ -565,8 +543,14 @@
         stroke: var(--txt3);
         margin-bottom: 12px;
       }
-
-      /* ── Footer ────────────────────────────────────── */
+      .scan-badge {
+        display: inline-block;
+        font-size: 0.72rem;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+        margin-left: 10px;
+      }
       footer {
         text-align: center;
         padding: 48px 24px 32px;
@@ -579,8 +563,6 @@
         color: var(--green);
         text-decoration: none;
       }
-
-      /* ── Responsive ────────────────────────────────── */
       @media (max-width: 640px) {
         .hero h1 {
           font-size: 1.8rem;
@@ -601,11 +583,14 @@
         .cam-sidebar {
           max-width: 100%;
         }
+        .scan-buttons {
+          flex-direction: column;
+          align-items: center;
+        }
       }
     </style>
   </head>
   <body>
-    <!-- ── Navbar ──────────────────────────────────── -->
     <nav>
       <div class="inner">
         <a href="/" class="logo">
@@ -625,7 +610,6 @@
       </div>
     </nav>
 
-    <!-- ── Hero ────────────────────────────────────── -->
     <section class="hero container">
       <h1>Identify Pests.<br /><span class="gr">Protect Crops.</span></h1>
       <p>
@@ -634,7 +618,6 @@
       </p>
     </section>
 
-    <!-- ── Mode Tabs ───────────────────────────────── -->
     <div class="tabs-wrap container">
       <div class="tabs">
         <button class="active" data-tab="upload">📷 Upload Image</button>
@@ -642,7 +625,6 @@
       </div>
     </div>
 
-    <!-- ── Upload Panel ────────────────────────────── -->
     <div class="container">
       <div id="panel-upload" class="panel active">
         <div class="upload-zone" id="dropZone">
@@ -666,15 +648,16 @@
         </div>
         <div class="preview-wrap" id="previewWrap">
           <img id="previewImg" src="" alt="Preview" />
-          <br />
-          <button class="btn btn-primary" id="analyzeBtn">
-            🔍 Analyze Pest
-          </button>
-          <button class="btn btn-outline" id="clearBtn">✕ Clear</button>
+          <div class="scan-buttons">
+            <button class="btn btn-primary" id="analyzeBtn">
+              🔍 Quick Scan
+            </button>
+            <button class="btn btn-deep" id="deepScanBtn">🧠 Deep Scan</button>
+            <button class="btn btn-outline" id="clearBtn">✕ Clear</button>
+          </div>
         </div>
       </div>
 
-      <!-- ── Camera Panel ───────────────────────────── -->
       <div id="panel-camera" class="panel">
         <div class="cam-container">
           <div class="cam-feed">
@@ -717,9 +700,11 @@
       </div>
     </div>
 
-    <!-- ── Results (for upload mode) ───────────────── -->
     <section class="results container" id="resultsSection">
-      <h2>Detection Results <span class="count" id="resCount"></span></h2>
+      <h2>
+        Detection Results <span class="count" id="resCount"></span>
+        <span class="scan-badge" id="scanType"></span>
+      </h2>
       <div class="result-grid">
         <div class="result-image">
           <img id="resultImg" src="" alt="Result" />
@@ -728,19 +713,17 @@
       </div>
     </section>
 
-    <!-- ── Loader ──────────────────────────────────── -->
     <div class="loader-overlay" id="loader">
       <div class="spinner"></div>
-      <p>Analyzing image for pests…</p>
+      <p id="loaderText">Analyzing image for pests…</p>
     </div>
 
-    <!-- ── Footer ──────────────────────────────────── -->
     <footer class="container">
       AgriGuard SmartDetect &copy; 2026 · Built with YOLOv8 &amp; Flask
     </footer>
 
     <script>
-      /* ── Tab Switching ────────────────────────────── */
+      /* ── Tab Switching ───────────────────────────── */
       const tabs = document.querySelectorAll(".tabs button");
       const panels = document.querySelectorAll(".panel");
       tabs.forEach((btn) => {
@@ -759,8 +742,6 @@
       const fileInput = document.getElementById("fileInput");
       const previewWrap = document.getElementById("previewWrap");
       const previewImg = document.getElementById("previewImg");
-      const analyzeBtn = document.getElementById("analyzeBtn");
-      const clearBtn = document.getElementById("clearBtn");
       let selectedFile = null;
 
       dropZone.addEventListener("click", () => fileInput.click());
@@ -791,7 +772,7 @@
         reader.readAsDataURL(file);
       }
 
-      clearBtn.addEventListener("click", () => {
+      document.getElementById("clearBtn").addEventListener("click", () => {
         selectedFile = null;
         fileInput.value = "";
         previewWrap.style.display = "none";
@@ -829,11 +810,9 @@
           </div>`;
       }
 
-      /* ── Card Builder ────────────────────────────── */
       function buildCardHTML(d) {
         return `
         <div class="det-card">
-          <!-- Header -->
           <div class="top">
             <div>
               <span class="pest-name">${d.common_name || d.name}</span>
@@ -845,15 +824,11 @@
               <span class="pest-count">×${d.count}</span>
             </span>
           </div>
-
-          <!-- Confidence -->
           <div class="conf-bar"><div class="conf-fill" style="width:${d.confidence}%"></div></div>
           <div class="meta">
             <span>Confidence: <strong>${d.confidence}%</strong></span>
             ${d.crops_at_risk ? `<span>Crops: <strong>${d.crops_at_risk}</strong></span>` : ""}
           </div>
-
-          <!-- Info Rows -->
           <div style="margin-top:12px;">
             ${infoRow("⚡", "URGENT ACTION", d.quick_action, "#fbbf24")}
             ${infoRow("💀", "DAMAGE", d.damage, "#f87171")}
@@ -865,28 +840,57 @@
         </div>`;
       }
 
-      /* ── Analyze (Upload) ────────────────────────── */
-      analyzeBtn.addEventListener("click", async () => {
+      /* ── Scan Function (shared by both buttons) ─── */
+      async function runScan(endpoint, loaderMsg, badgeText, badgeColor) {
         if (!selectedFile) return;
         const loader = document.getElementById("loader");
+        document.getElementById("loaderText").textContent = loaderMsg;
         loader.classList.add("show");
+
         const form = new FormData();
         form.append("image", selectedFile);
+
         try {
-          const res = await fetch("/detect", { method: "POST", body: form });
+          const res = await fetch(endpoint, { method: "POST", body: form });
           const data = await res.json();
           loader.classList.remove("show");
           if (data.error) {
             alert(data.error);
             return;
           }
+
+          // Set scan type badge
+          const badge = document.getElementById("scanType");
+          badge.textContent = badgeText;
+          badge.style.background = badgeColor.bg;
+          badge.style.color = badgeColor.cl;
+
           showResults(data.result_image_url, data.detections);
         } catch (err) {
           loader.classList.remove("show");
-          alert("Detection failed: " + err.message);
+          alert("Scan failed: " + err.message);
         }
+      }
+
+      /* ── Quick Scan ──────────────────────────────── */
+      document.getElementById("analyzeBtn").addEventListener("click", () => {
+        runScan("/detect", "Running quick scan…", "⚡ Quick Scan", {
+          bg: "rgba(34,197,94,0.15)",
+          cl: "#22c55e",
+        });
       });
 
+      /* ── Deep Scan ───────────────────────────────── */
+      document.getElementById("deepScanBtn").addEventListener("click", () => {
+        runScan(
+          "/detect_deep",
+          "Running deep multi-scale analysis… This takes longer",
+          "🧠 Deep Scan",
+          { bg: "rgba(59,130,246,0.15)", cl: "#3b82f6" },
+        );
+      });
+
+      /* ── Show Results ────────────────────────────── */
       function showResults(imgUrl, detections) {
         document.getElementById("resultImg").src = imgUrl;
         const section = document.getElementById("resultsSection");
@@ -922,7 +926,6 @@
       const camPlace = document.getElementById("camPlaceholder");
       const liveDot = document.getElementById("liveDot");
       const camSide = document.getElementById("camSidebar");
-      const camEmpty = document.getElementById("camEmpty");
       let polling = null;
 
       startBtn.addEventListener("click", () => {
@@ -932,7 +935,7 @@
         liveDot.style.display = "flex";
         startBtn.style.display = "none";
         stopBtn.style.display = "inline-flex";
-        camEmpty.style.display = "none";
+        document.getElementById("camEmpty").style.display = "none";
         polling = setInterval(pollDetections, 1500);
       });
 
