@@ -451,6 +451,7 @@
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 24px;
+        align-items: start;
       }
       @media (max-width: 860px) {
         .result-grid {
@@ -471,6 +472,16 @@
         display: flex;
         flex-direction: column;
         gap: 12px;
+        max-height: 80vh;
+        overflow-y: auto;
+        padding-right: 4px;
+      }
+      .det-cards::-webkit-scrollbar {
+        width: 4px;
+      }
+      .det-cards::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 4px;
       }
 
       /* ── Detection Card ────────────────────────────── */
@@ -522,6 +533,7 @@
         gap: 16px;
         font-size: 0.82rem;
         color: var(--txt2);
+        flex-wrap: wrap;
       }
       .det-card .meta strong {
         color: var(--txt);
@@ -589,38 +601,6 @@
         .cam-sidebar {
           max-width: 100%;
         }
-      }
-
-      /* ── Expanded Card Info Sections ─────────────── */
-      .det-card .meta {
-        display: flex;
-        gap: 16px;
-        font-size: 0.82rem;
-        color: var(--txt2);
-        flex-wrap: wrap;
-      }
-      .det-card .meta strong {
-        color: var(--txt);
-        font-weight: 600;
-      }
-
-      /* Make the result grid stack on the right for longer cards */
-      .result-grid {
-        align-items: start;
-      }
-
-      /* Scrollable cards column when many pests found */
-      .det-cards {
-        max-height: 80vh;
-        overflow-y: auto;
-        padding-right: 4px;
-      }
-      .det-cards::-webkit-scrollbar {
-        width: 4px;
-      }
-      .det-cards::-webkit-scrollbar-thumb {
-        background: var(--border);
-        border-radius: 4px;
       }
     </style>
   </head>
@@ -819,72 +799,70 @@
         document.getElementById("resultsSection").classList.remove("show");
       });
 
-      /* ── Severity Badge Helper ───────────────────── */
+      /* ── Helpers ─────────────────────────────────── */
       function severityBadge(level) {
-        const colors = {
-          low: { bg: "rgba(34,197,94,0.12)", color: "#22c55e", icon: "🟢" },
-          medium: { bg: "rgba(245,158,11,0.12)", color: "#f59e0b", icon: "🟡" },
-          high: { bg: "rgba(239,68,68,0.12)", color: "#ef4444", icon: "🔴" },
+        const map = {
+          low: { bg: "rgba(34,197,94,0.12)", cl: "#22c55e", icon: "🟢" },
+          medium: { bg: "rgba(245,158,11,0.12)", cl: "#f59e0b", icon: "🟡" },
+          high: { bg: "rgba(239,68,68,0.12)", cl: "#ef4444", icon: "🔴" },
           unknown: {
             bg: "rgba(161,161,170,0.12)",
-            color: "#a1a1aa",
+            cl: "#a1a1aa",
             icon: "⚪",
           },
         };
-        const c = colors[level] || colors["unknown"];
-        return `<span style="font-size:0.78rem;padding:3px 10px;border-radius:20px;background:${c.bg};color:${c.color};font-weight:600;">${c.icon} ${level}</span>`;
+        const c = map[level] || map["unknown"];
+        return `<span style="font-size:0.75rem;padding:3px 10px;border-radius:20px;
+                background:${c.bg};color:${c.cl};font-weight:600;">${c.icon} ${level}</span>`;
       }
 
-      /* ── Build Detection Card HTML ───────────────── */
+      function infoRow(icon, label, value, color) {
+        if (!value) return "";
+        return `
+          <div style="display:flex;gap:10px;align-items:start;padding:8px 0;
+                      border-bottom:1px solid rgba(255,255,255,0.04);">
+            <span style="font-size:1.05rem;flex-shrink:0;margin-top:1px;">${icon}</span>
+            <div style="font-size:0.84rem;line-height:1.5;">
+              <span style="color:#71717a;font-weight:600;">${label}</span><br>
+              <span style="color:${color || "#d4d4d8"};font-weight:500;">${value}</span>
+            </div>
+          </div>`;
+      }
+
+      /* ── Card Builder ────────────────────────────── */
       function buildCardHTML(d) {
         return `
-    <div class="det-card">
-      <div class="top">
-        <span class="pest-name">${d.name}</span>
-        <span style="display:flex;gap:8px;align-items:center;">
-          ${severityBadge(d.severity || "unknown")}
-          <span class="pest-count">×${d.count}</span>
-        </span>
-      </div>
+        <div class="det-card">
+          <!-- Header -->
+          <div class="top">
+            <div>
+              <span class="pest-name">${d.common_name || d.name}</span>
+              <span style="display:block;font-size:0.75rem;color:#71717a;margin-top:2px;
+                           font-style:italic;">${d.name}</span>
+            </div>
+            <span style="display:flex;gap:8px;align-items:center;">
+              ${severityBadge(d.severity || "unknown")}
+              <span class="pest-count">×${d.count}</span>
+            </span>
+          </div>
 
-      <div class="conf-bar">
-        <div class="conf-fill" style="width:${d.confidence}%"></div>
-      </div>
-      <div class="meta">
-        <span>Confidence: <strong>${d.confidence}%</strong></span>
-        ${d.crops_affected ? `<span>Crops: <strong>${d.crops_affected}</strong></span>` : ""}
-      </div>
+          <!-- Confidence -->
+          <div class="conf-bar"><div class="conf-fill" style="width:${d.confidence}%"></div></div>
+          <div class="meta">
+            <span>Confidence: <strong>${d.confidence}%</strong></span>
+            ${d.crops_at_risk ? `<span>Crops: <strong>${d.crops_at_risk}</strong></span>` : ""}
+          </div>
 
-      <!-- DESCRIPTION from Gemini -->
-      ${
-        d.description
-          ? `<div style="margin-top:12px;padding:12px 14px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);font-size:0.85rem;color:#d4d4d8;line-height:1.6;">
-              <div style="font-weight:600;color:#e4e4e7;margin-bottom:6px;">📋 About this pest</div>
-              ${d.description}
-             </div>`
-          : ""
-      }
-
-      <!-- ACTION PLAN from Gemini -->
-      ${
-        d.action
-          ? `<div style="margin-top:8px;padding:12px 14px;border-radius:8px;background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.12);font-size:0.85rem;color:#93c5fd;line-height:1.7;">
-              <div style="font-weight:600;color:#60a5fa;margin-bottom:6px;">🛡️ Action Plan</div>
-              ${d.action.replace(/\n/g, "<br>")}
-             </div>`
-          : ""
-      }
-
-      <!-- PESTICIDE RECOMMENDATIONS -->
-      <div class="pesticide">💊 Chemical: <strong>${d.pesticide}</strong></div>
-      ${
-        d.organic_solution
-          ? `<div style="margin-top:6px;padding:8px 14px;border-radius:8px;background:rgba(163,230,53,0.08);border:1px solid rgba(163,230,53,0.15);font-size:0.85rem;color:#a3e635;font-weight:500;display:flex;align-items:center;gap:6px;">
-              🌿 Organic: <strong>${d.organic_solution}</strong>
-             </div>`
-          : ""
-      }
-    </div>`;
+          <!-- Info Rows -->
+          <div style="margin-top:12px;">
+            ${infoRow("⚡", "URGENT ACTION", d.quick_action, "#fbbf24")}
+            ${infoRow("💀", "DAMAGE", d.damage, "#f87171")}
+            ${infoRow("🔍", "HOW TO IDENTIFY", d.identify, "#d4d4d8")}
+            ${infoRow("💊", "CHEMICAL TREATMENT", d.chemical, "#22c55e")}
+            ${infoRow("🌿", "ORGANIC REMEDY", d.organic, "#a3e635")}
+            ${infoRow("🛡️", "PREVENTION", d.prevention, "#93c5fd")}
+          </div>
+        </div>`;
       }
 
       /* ── Analyze (Upload) ────────────────────────── */
@@ -918,13 +896,12 @@
 
         if (!detections.length) {
           cards.innerHTML = `<div class="no-det">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-          stroke-width="1.5" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
-        <p>No pests detected — crop looks healthy! 🌱</p>
-      </div>`;
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                 stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <p>No pests detected — crop looks healthy! 🌱</p></div>`;
           counter.textContent = "0 pests";
         } else {
           let total = detections.reduce((s, d) => s + d.count, 0);
@@ -967,8 +944,7 @@
         stopBtn.style.display = "none";
         startBtn.style.display = "inline-flex";
         clearInterval(polling);
-        camSide.innerHTML =
-          '<div class="empty-state" id="camEmpty">Camera stopped.</div>';
+        camSide.innerHTML = '<div class="empty-state">Camera stopped.</div>';
       });
 
       async function pollDetections() {

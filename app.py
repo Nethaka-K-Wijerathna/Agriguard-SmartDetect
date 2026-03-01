@@ -12,7 +12,7 @@ app = Flask(__name__)
 # ==========================================
 # 1. GEMINI AI SETUP
 # ==========================================
-GEMINI_API_KEY = "AIzaSyARTvYcRppJQ6hczeAggZkg6CqsWm_e2pA"  # Replace with your key
+GEMINI_API_KEY = "AIzaSyDXD68jN8z1KRQuWm_iplZpNsfyblu-1Xw"  # Your API Key
 genai.configure(api_key=GEMINI_API_KEY)
 
 working_model_name = "models/gemini-1.5-flash"
@@ -30,25 +30,31 @@ ai_model = genai.GenerativeModel(working_model_name)
 
 pest_memory_cache = {}
 
+
 def get_smart_pest_info(pest_name):
-    """Asks Gemini for detailed pest info using strict JSON mode."""
+    """Asks Gemini for concise, farmer-friendly pest info."""
     if pest_name in pest_memory_cache:
         return pest_memory_cache[pest_name]
 
     print(f"✨ New pest detected: '{pest_name}'. Asking Gemini...")
 
     prompt = f"""
-You are an expert agricultural entomologist. A farmer has detected the pest "{pest_name}" on their crop.
-Respond ONLY with a valid JSON object using this exact schema (no extra keys, no markdown):
+You are a practical agricultural advisor talking to a farmer. The pest "{pest_name}" was detected.
+Be SHORT and DIRECT. No filler words. Respond ONLY with this JSON:
 
 {{
-  "pesticide": "The single best recommended chemical pesticide (brand or active ingredient name)",
-  "organic_solution": "The best organic or biological control method",
-  "description": "A detailed 3-4 sentence paragraph: what this pest is, what crops it attacks, its life cycle behavior, and the visible damage symptoms on the plant.",
-  "action": "A numbered step-by-step action plan (as a single string) with at least 4 steps. Include: 1) Immediate action, 2) Chemical treatment with dosage if possible, 3) Organic alternative, 4) Long-term prevention.",
-  "severity": "low, medium, or high",
-  "crops_affected": "Comma-separated list of crops this pest commonly attacks"
+  "common_name": "Simple common name of this pest",
+  "damage": "In 1 short sentence, what damage does it do to the crop?",
+  "identify": "In 1 short sentence, how to visually confirm it on the plant?",
+  "chemical": "Best chemical pesticide name + dosage per liter of water",
+  "organic": "Best organic remedy in 1 sentence",
+  "quick_action": "The ONE most urgent thing the farmer should do RIGHT NOW in 1 sentence",
+  "prevention": "1 sentence on how to prevent it next season",
+  "severity": "low or medium or high",
+  "crops_at_risk": "Top 3-4 crops this pest attacks, comma separated"
 }}
+
+Keep every value under 25 words. Be specific with chemical names and dosages.
 """
 
     try:
@@ -56,18 +62,17 @@ Respond ONLY with a valid JSON object using this exact schema (no extra keys, no
             prompt,
             generation_config=genai.GenerationConfig(
                 response_mime_type="application/json",
-                temperature=0.3
+                temperature=0.2
             )
         )
 
         info = json.loads(response.text)
         pest_memory_cache[pest_name] = info
-        print(f"✅ Got detailed guide for '{pest_name}'")
+        print(f"✅ Got info for '{pest_name}'")
         return info
 
     except json.JSONDecodeError as e:
         print(f"⚠️ JSON parse error for {pest_name}: {e}")
-        print(f"Raw response: {response.text[:500]}")
         return _fallback_info(pest_name)
     except Exception as e:
         print(f"⚠️ AI Lookup Failed for {pest_name}: {e}")
@@ -77,12 +82,15 @@ Respond ONLY with a valid JSON object using this exact schema (no extra keys, no
 def _fallback_info(pest_name):
     """Return a safe fallback if Gemini fails."""
     return {
-        "pesticide": "Consult local agricultural officer",
-        "organic_solution": "Use neem oil spray as a general organic remedy",
-        "description": f"The AI could not retrieve details for '{pest_name}'. Please verify your internet connection and API key.",
-        "action": "1) Manually inspect the crop. 2) Isolate affected plants. 3) Consult a local agricultural extension officer. 4) Apply a broad-spectrum insecticide as a temporary measure.",
+        "common_name": pest_name,
+        "damage": "Could not retrieve info. Check internet connection.",
+        "identify": "Consult an agricultural officer for visual identification.",
+        "chemical": "Consult local agri-store",
+        "organic": "Neem oil spray (5ml per liter) as general remedy",
+        "quick_action": "Isolate affected plants immediately.",
+        "prevention": "Practice crop rotation and field hygiene.",
         "severity": "unknown",
-        "crops_affected": "Unknown"
+        "crops_at_risk": "Unknown"
     }
 
 
@@ -127,7 +135,6 @@ def detect():
 
     detections = []
     counts = {}
-    # Use timestamp to avoid browser caching the old image
     timestamp = int(time.time())
     result_filename = f"annotated_upload_{timestamp}.jpg"
     result_img_path = os.path.join("static", "results", result_filename)
@@ -142,17 +149,20 @@ def detect():
             counts[label] = counts.get(label, 0) + 1
 
             if not any(d['name'] == label for d in detections):
-                smart_info = get_smart_pest_info(label)
+                info = get_smart_pest_info(label)
 
                 detections.append({
                     "name": label,
                     "confidence": conf,
-                    "pesticide": smart_info.get("pesticide", "Unknown"),
-                    "organic_solution": smart_info.get("organic_solution", ""),
-                    "description": smart_info.get("description", ""),
-                    "action": smart_info.get("action", ""),
-                    "severity": smart_info.get("severity", "unknown"),
-                    "crops_affected": smart_info.get("crops_affected", "")
+                    "common_name": info.get("common_name", label),
+                    "damage": info.get("damage", ""),
+                    "identify": info.get("identify", ""),
+                    "chemical": info.get("chemical", "Consult expert"),
+                    "organic": info.get("organic", ""),
+                    "quick_action": info.get("quick_action", ""),
+                    "prevention": info.get("prevention", ""),
+                    "severity": info.get("severity", "unknown"),
+                    "crops_at_risk": info.get("crops_at_risk", "")
                 })
 
     for d in detections:
@@ -187,17 +197,20 @@ def generate_frames():
                 temp_counts[lbl] = temp_counts.get(lbl, 0) + 1
 
                 if not any(d['name'] == lbl for d in current_dets):
-                    smart_info = get_smart_pest_info(lbl)
+                    info = get_smart_pest_info(lbl)
 
                     current_dets.append({
                         "name": lbl,
                         "confidence": round(float(box.conf[0]) * 100, 1),
-                        "pesticide": smart_info.get("pesticide", "Unknown"),
-                        "organic_solution": smart_info.get("organic_solution", ""),
-                        "description": smart_info.get("description", ""),
-                        "action": smart_info.get("action", ""),
-                        "severity": smart_info.get("severity", "unknown"),
-                        "crops_affected": smart_info.get("crops_affected", "")
+                        "common_name": info.get("common_name", lbl),
+                        "damage": info.get("damage", ""),
+                        "identify": info.get("identify", ""),
+                        "chemical": info.get("chemical", "Consult expert"),
+                        "organic": info.get("organic", ""),
+                        "quick_action": info.get("quick_action", ""),
+                        "prevention": info.get("prevention", ""),
+                        "severity": info.get("severity", "unknown"),
+                        "crops_at_risk": info.get("crops_at_risk", "")
                     })
 
         for d in current_dets:
@@ -227,7 +240,7 @@ def get_detections():
 # ==========================================
 @app.route('/lookup/<pest_name>')
 def lookup_pest(pest_name):
-    """Hit /lookup/aphids in the browser to test Gemini directly."""
+    """Hit /lookup/aphids in browser to test Gemini directly."""
     info = get_smart_pest_info(pest_name)
     return jsonify(info)
 
