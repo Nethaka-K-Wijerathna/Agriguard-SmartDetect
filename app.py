@@ -6,7 +6,7 @@ import numpy as np
 import base64
 import threading
 from datetime import datetime
-from flask import Flask, render_template, request, jsonify, Response, send_file
+from flask import Flask, render_template, request, jsonify, Response
 from ultralytics import YOLO
 import torch
 import google.generativeai as genai
@@ -17,7 +17,7 @@ app = Flask(__name__)
 # ==========================================
 # 1. GEMINI AI SETUP
 # ==========================================
-GEMINI_API_KEY = "AIzaSyB6zPepWLHT5nx6GWcX-ZIwiUrHFTvwEkc"
+GEMINI_API_KEY = "AIzaSyAOBX8qok1NJ9CN-Q5fjiNVPtlqZJC8b1s"
 genai.configure(api_key=GEMINI_API_KEY)
 
 working_model_name = "models/gemini-1.5-flash"
@@ -201,10 +201,6 @@ def enhance_image(image):
 
 
 def enhance_image_fast(image):
-    """
-    Lighter enhancement for live camera — faster than full enhance.
-    Skips denoising (slow) and uses simpler contrast boost.
-    """
     lab = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
     l, a, b = cv2.split(lab)
     clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(4, 4))
@@ -236,12 +232,6 @@ except Exception as e:
 # 6. THREADED LIVE CAMERA SYSTEM
 # ==========================================
 class CameraDetector:
-    """
-    Separates camera reading from detection.
-    Camera runs at full speed, detection runs in background thread.
-    Result: smooth video feed + accurate detections.
-    """
-
     def __init__(self):
         self.latest_frame = None
         self.latest_annotated = None
@@ -250,14 +240,12 @@ class CameraDetector:
         self.lock = threading.Lock()
         self.det_lock = threading.Lock()
         self.cap = None
-        self.confidence_threshold = 0.40  # Higher = only show confident detections
-
-        # Stabilization: track detections over multiple frames
-        self.detection_history = {}  # pest_name -> {count, total_conf, last_seen}
+        self.confidence_threshold = 0.40
+        self.detection_history = {}
         self.stable_detections = []
         self.frame_number = 0
-        self.CONFIRM_FRAMES = 3  # Pest must appear in 3+ detection cycles to show
-        self.FORGET_FRAMES = 10  # Remove pest if not seen for 10 cycles
+        self.CONFIRM_FRAMES = 3
+        self.FORGET_FRAMES = 10
 
     def start(self):
         if self.running:
@@ -268,8 +256,6 @@ class CameraDetector:
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
         self.cap.set(cv2.CAP_PROP_FPS, 30)
         self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
-
-        # Start detection thread
         self.det_thread = threading.Thread(target=self._detection_loop, daemon=True)
         self.det_thread.start()
         print("✅ Camera started")
@@ -284,41 +270,31 @@ class CameraDetector:
         print("⏹ Camera stopped")
 
     def read_frame(self):
-        """Read latest frame from camera (called by video feed generator)."""
         if not self.cap or not self.running:
             return None
-
         success, frame = self.cap.read()
         if not success:
             return None
-
         with self.lock:
             self.latest_frame = frame.copy()
-
-        # Return annotated frame if available, otherwise raw frame
         with self.det_lock:
             if self.latest_annotated is not None:
                 return self.latest_annotated
         return frame
 
     def _detection_loop(self):
-        """Background thread: runs YOLO detection without blocking camera feed."""
         while self.running:
             frame = None
             with self.lock:
                 if self.latest_frame is not None:
                     frame = self.latest_frame.copy()
-
             if frame is None:
                 time.sleep(0.05)
                 continue
 
             self.frame_number += 1
-
-            # Fast enhancement
             enhanced = enhance_image_fast(frame)
 
-            # Run YOLO
             results = model(
                 enhanced,
                 conf=self.confidence_threshold,
@@ -335,101 +311,68 @@ class CameraDetector:
                 for box in r.boxes:
                     label = model.names[int(box.cls[0])]
                     conf = float(box.conf[0])
-
                     if label not in current_frame_pests or conf > current_frame_pests[label]["conf"]:
-                        current_frame_pests[label] = {
-                            "conf": conf,
-                            "box": box.xyxy[0].cpu().numpy()
-                        }
+                        current_frame_pests[label] = {"conf": conf, "box": box.xyxy[0].cpu().numpy()}
 
-            # ── STABILIZATION: Track pests across frames ──
-            # Update seen pests
             for pest_name, data in current_frame_pests.items():
                 if pest_name in self.detection_history:
                     h = self.detection_history[pest_name]
                     h["seen_count"] += 1
                     h["last_seen"] = self.frame_number
-                    # Running average confidence
                     h["avg_conf"] = (h["avg_conf"] * 0.7) + (data["conf"] * 0.3)
                     h["best_conf"] = max(h["best_conf"], data["conf"])
                     h["latest_box"] = data["box"]
                     h["current_count"] = h.get("current_count", 0) + 1
                 else:
                     self.detection_history[pest_name] = {
-                        "seen_count": 1,
-                        "last_seen": self.frame_number,
-                        "avg_conf": data["conf"],
-                        "best_conf": data["conf"],
-                        "latest_box": data["box"],
-                        "current_count": 1
+                        "seen_count": 1, "last_seen": self.frame_number,
+                        "avg_conf": data["conf"], "best_conf": data["conf"],
+                        "latest_box": data["box"], "current_count": 1
                     }
 
-            # Remove stale pests (not seen for FORGET_FRAMES cycles)
-            stale = [name for name, h in self.detection_history.items()
+            stale = [n for n, h in self.detection_history.items()
                      if self.frame_number - h["last_seen"] > self.FORGET_FRAMES]
             for name in stale:
                 del self.detection_history[name]
 
-            # Build stable detections (only pests seen in CONFIRM_FRAMES+ cycles)
             confirmed_pests = []
             for pest_name, h in self.detection_history.items():
                 if h["seen_count"] >= self.CONFIRM_FRAMES:
-                    # Draw box on annotated frame
                     x1, y1, x2, y2 = map(int, h["latest_box"])
                     conf_pct = round(h["avg_conf"] * 100, 1)
-
-                    # Color based on confidence
-                    if conf_pct >= 70:
-                        color = (0, 255, 0)      # Green = confident
-                    elif conf_pct >= 50:
-                        color = (0, 255, 255)    # Yellow = medium
-                    else:
-                        color = (0, 165, 255)    # Orange = lower
-
+                    color = (0, 255, 0) if conf_pct >= 70 else (0, 255, 255) if conf_pct >= 50 else (0, 165, 255)
                     cv2.rectangle(annotated, (x1, y1), (x2, y2), color, 2)
-
-                    # Label background
                     label_text = f"{pest_name} {conf_pct}%"
                     (tw, th), _ = cv2.getTextSize(label_text, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 1)
                     cv2.rectangle(annotated, (x1, y1 - th - 10), (x1 + tw + 4, y1), color, -1)
                     cv2.putText(annotated, label_text, (x1 + 2, y1 - 5),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 2)
 
-                    # Get pest info (cached, so no delay after first time)
                     info = get_smart_pest_info(pest_name)
-
                     confirmed_pests.append({
-                        "name": pest_name,
-                        "confidence": conf_pct,
+                        "name": pest_name, "confidence": conf_pct,
                         "best_confidence": round(h["best_conf"] * 100, 1),
-                        "count": h.get("current_count", 1),
-                        "frames_seen": h["seen_count"],
+                        "count": h.get("current_count", 1), "frames_seen": h["seen_count"],
                         "common_name": info.get("common_name", pest_name),
-                        "damage": info.get("damage", ""),
-                        "identify": info.get("identify", ""),
+                        "damage": info.get("damage", ""), "identify": info.get("identify", ""),
                         "chemical": info.get("chemical", "Consult expert"),
                         "organic": info.get("organic", ""),
                         "quick_action": info.get("quick_action", ""),
                         "prevention": info.get("prevention", ""),
                         "severity": info.get("severity", "unknown"),
                         "crops_at_risk": info.get("crops_at_risk", ""),
-                        "verified": "stable",
-                        "gemini_note": ""
+                        "verified": "stable", "gemini_note": ""
                     })
 
-            # Sort by confidence (highest first)
             confirmed_pests.sort(key=lambda x: x["confidence"], reverse=True)
 
-            # Update shared state
             with self.det_lock:
                 self.latest_annotated = annotated
                 self.stable_detections = confirmed_pests
 
-            # Reset current counts for next cycle
             for h in self.detection_history.values():
                 h["current_count"] = 0
 
-            # Small sleep to control detection rate (~5-8 detections per second)
             time.sleep(0.1)
 
     def get_detections(self):
@@ -437,7 +380,6 @@ class CameraDetector:
             return self.stable_detections.copy()
 
 
-# Global camera detector instance
 camera = CameraDetector()
 
 
@@ -474,13 +416,8 @@ def detect():
     cv2.imwrite(enhanced_path, enhanced)
 
     results = model.predict(
-        source=enhanced_path,
-        conf=0.30,
-        iou=0.5,
-        imgsz=640,
-        agnostic_nms=True,
-        augment=True,
-        max_det=50
+        source=enhanced_path, conf=0.30, iou=0.5, imgsz=640,
+        agnostic_nms=True, augment=True, max_det=50
     )
 
     detections = []
@@ -491,7 +428,6 @@ def detect():
 
     for r in results:
         cv2.imwrite(result_img_path, r.plot())
-
         for box in r.boxes:
             label = model.names[int(box.cls[0])]
             conf = round(float(box.conf[0]) * 100, 1)
@@ -501,9 +437,7 @@ def detect():
                 x1, y1, x2, y2 = map(int, box.xyxy[0])
                 h, w = image.shape[:2]
                 pad = 20
-                x1c, y1c = max(0, x1 - pad), max(0, y1 - pad)
-                x2c, y2c = min(w, x2 + pad), min(h, y2 + pad)
-                cropped = image[y1c:y2c, x1c:x2c]
+                cropped = image[max(0,y1-pad):min(h,y2+pad), max(0,x1-pad):min(w,x2+pad)]
 
                 verified = "unverified"
                 gemini_note = ""
@@ -516,7 +450,6 @@ def detect():
                         actual = verify_result.get("actual_pest", "unknown")
                         if actual.lower() == "not a pest":
                             verified = "rejected"
-                            gemini_note = "Gemini says this is not a pest"
                         else:
                             verified = "corrected"
                             gemini_note = f"Gemini suggests: {actual}"
@@ -527,21 +460,17 @@ def detect():
                     continue
 
                 info = get_smart_pest_info(label)
-
                 detections.append({
-                    "name": label,
-                    "confidence": conf,
+                    "name": label, "confidence": conf,
                     "common_name": info.get("common_name", label),
-                    "damage": info.get("damage", ""),
-                    "identify": info.get("identify", ""),
+                    "damage": info.get("damage", ""), "identify": info.get("identify", ""),
                     "chemical": info.get("chemical", "Consult expert"),
                     "organic": info.get("organic", ""),
                     "quick_action": info.get("quick_action", ""),
                     "prevention": info.get("prevention", ""),
                     "severity": info.get("severity", "unknown"),
                     "crops_at_risk": info.get("crops_at_risk", ""),
-                    "verified": verified,
-                    "gemini_note": gemini_note
+                    "verified": verified, "gemini_note": gemini_note
                 })
 
     for d in detections:
@@ -555,12 +484,10 @@ def detect():
 
     response_data = {
         "result_image_url": f"/static/results/{result_filename}",
-        "detections": detections,
-        "plant_score": plant_score
+        "detections": detections, "plant_score": plant_score
     }
     if plant_warning:
         response_data["warning"] = plant_warning
-
     return jsonify(response_data)
 
 
@@ -592,48 +519,35 @@ def detect_deep():
 
     for img_size in [480, 640, 832]:
         results = model.predict(
-            source=enhanced,
-            conf=0.25,
-            iou=0.5,
-            imgsz=img_size,
-            agnostic_nms=True,
-            augment=True,
-            max_det=50,
-            verbose=False
+            source=enhanced, conf=0.25, iou=0.5, imgsz=img_size,
+            agnostic_nms=True, augment=True, max_det=50, verbose=False
         )
-
         if img_size == 640:
             for r in results:
                 best_annotated = r.plot()
-
         for r in results:
             for box in r.boxes:
                 label = model.names[int(box.cls[0])]
                 conf = round(float(box.conf[0]) * 100, 1)
                 all_counts[label] = all_counts.get(label, 0) + 1
-
                 if label not in all_detections or conf > all_detections[label]["confidence"]:
                     info = get_smart_pest_info(label)
                     all_detections[label] = {
-                        "name": label,
-                        "confidence": conf,
+                        "name": label, "confidence": conf,
                         "common_name": info.get("common_name", label),
-                        "damage": info.get("damage", ""),
-                        "identify": info.get("identify", ""),
+                        "damage": info.get("damage", ""), "identify": info.get("identify", ""),
                         "chemical": info.get("chemical", "Consult expert"),
                         "organic": info.get("organic", ""),
                         "quick_action": info.get("quick_action", ""),
                         "prevention": info.get("prevention", ""),
                         "severity": info.get("severity", "unknown"),
                         "crops_at_risk": info.get("crops_at_risk", ""),
-                        "verified": "deep-scan",
-                        "gemini_note": ""
+                        "verified": "deep-scan", "gemini_note": ""
                     }
 
     detections = list(all_detections.values())
     for d in detections:
         d['count'] = all_counts.get(d['name'], 0)
-
     for d in detections:
         save_detection(d, "", crop_type)
 
@@ -642,6 +556,132 @@ def detect_deep():
     result_img_path = os.path.join("static", "results", result_filename)
     if best_annotated is not None:
         cv2.imwrite(result_img_path, best_annotated)
+
+    response_data = {
+        "result_image_url": f"/static/results/{result_filename}",
+        "detections": detections, "plant_score": plant_score
+    }
+    if plant_warning:
+        response_data["warning"] = plant_warning
+    return jsonify(response_data)
+
+
+# ==========================================
+# 8. CAPTURE ROUTE (Phone Camera → base64 → detect)
+# ==========================================
+@app.route('/detect_capture', methods=['POST'])
+def detect_capture():
+    """
+    Receives a base64 image from the browser camera (phone/laptop),
+    decodes it, runs YOLO + Gemini, returns results.
+    """
+    data = request.get_json()
+    if not data or 'image' not in data:
+        return jsonify({"error": "No image data received"}), 400
+
+    crop_type = data.get('crop', 'Unknown')
+
+    # Decode base64 image
+    try:
+        img_data = data['image']
+        # Remove header if present: "data:image/jpeg;base64,..."
+        if ',' in img_data:
+            img_data = img_data.split(',')[1]
+
+        img_bytes = base64.b64decode(img_data)
+        np_arr = np.frombuffer(img_bytes, np.uint8)
+        image = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+
+        if image is None:
+            return jsonify({"error": "Could not decode image"}), 400
+
+    except Exception as e:
+        return jsonify({"error": f"Image decode failed: {str(e)}"}), 400
+
+    # Save original capture
+    timestamp = int(time.time())
+    capture_filename = f"capture_{timestamp}.jpg"
+    capture_path = os.path.join("static", "uploads", capture_filename)
+    cv2.imwrite(capture_path, image)
+
+    # Plant check
+    is_plant, plant_score = is_plant_image(image)
+    plant_warning = None
+    if not is_plant:
+        plant_warning = f"This image doesn't look like a plant/crop (plant score: {plant_score}%). Results may be unreliable."
+
+    # Enhance
+    enhanced = enhance_image(image)
+    enhanced_path = os.path.join("static", "uploads", "enhanced_capture.jpg")
+    cv2.imwrite(enhanced_path, enhanced)
+
+    # Run YOLO with augmentation
+    results = model.predict(
+        source=enhanced_path, conf=0.30, iou=0.5, imgsz=640,
+        agnostic_nms=True, augment=True, max_det=50
+    )
+
+    detections = []
+    counts = {}
+    result_filename = f"annotated_capture_{timestamp}.jpg"
+    result_img_path = os.path.join("static", "results", result_filename)
+
+    for r in results:
+        cv2.imwrite(result_img_path, r.plot())
+        for box in r.boxes:
+            label = model.names[int(box.cls[0])]
+            conf = round(float(box.conf[0]) * 100, 1)
+            counts[label] = counts.get(label, 0) + 1
+
+            if not any(d['name'] == label for d in detections):
+                x1, y1, x2, y2 = map(int, box.xyxy[0])
+                h, w = image.shape[:2]
+                pad = 20
+                cropped = image[max(0, y1 - pad):min(h, y2 + pad), max(0, x1 - pad):min(w, x2 + pad)]
+
+                verified = "unverified"
+                gemini_note = ""
+
+                if cropped.size > 0 and conf < 75:
+                    verify_result = verify_with_gemini(cropped, label)
+                    if verify_result.get("is_correct"):
+                        verified = "verified"
+                    else:
+                        actual = verify_result.get("actual_pest", "unknown")
+                        if actual.lower() == "not a pest":
+                            verified = "rejected"
+                        else:
+                            verified = "corrected"
+                            gemini_note = f"Gemini suggests: {actual}"
+                elif conf >= 75:
+                    verified = "high-confidence"
+
+                if verified == "rejected":
+                    continue
+
+                info = get_smart_pest_info(label)
+                detections.append({
+                    "name": label, "confidence": conf,
+                    "common_name": info.get("common_name", label),
+                    "damage": info.get("damage", ""), "identify": info.get("identify", ""),
+                    "chemical": info.get("chemical", "Consult expert"),
+                    "organic": info.get("organic", ""),
+                    "quick_action": info.get("quick_action", ""),
+                    "prevention": info.get("prevention", ""),
+                    "severity": info.get("severity", "unknown"),
+                    "crops_at_risk": info.get("crops_at_risk", ""),
+                    "verified": verified, "gemini_note": gemini_note
+                })
+
+    for d in detections:
+        d['count'] = counts.get(d['name'], 0)
+
+    for d in detections:
+        save_detection(d, f"/static/results/{result_filename}", crop_type)
+
+    # Cleanup
+    if os.path.exists(enhanced_path):
+        os.remove(enhanced_path)
 
     response_data = {
         "result_image_url": f"/static/results/{result_filename}",
@@ -655,30 +695,19 @@ def detect_deep():
 
 
 # ==========================================
-# 8. LIVE CAMERA ROUTES (SMOOTH)
+# 9. LIVE CAMERA ROUTES
 # ==========================================
 def generate_frames():
-    """Generator that yields frames as fast as the camera can read them."""
     while camera.running:
         frame = camera.read_frame()
         if frame is None:
             time.sleep(0.01)
             continue
-
-        ret, buffer = cv2.imencode('.jpg', frame,
-                                    [cv2.IMWRITE_JPEG_QUALITY, 80])
+        ret, buffer = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 80])
         if not ret:
             continue
-
-        frame_bytes = buffer.tobytes()
         yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
-
-    # Send a blank frame when stopped
-    blank = np.zeros((480, 640, 3), dtype=np.uint8)
-    ret, buffer = cv2.imencode('.jpg', blank)
-    yield (b'--frame\r\n'
-           b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
+               b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
 
 
 @app.route('/video_feed')
@@ -706,14 +735,13 @@ def get_detections():
 
 @app.route('/set_confidence/<int:level>')
 def set_confidence(level):
-    """Change live camera confidence threshold. Level: 1=low, 2=medium, 3=high"""
     thresholds = {1: 0.25, 2: 0.40, 3: 0.60}
     camera.confidence_threshold = thresholds.get(level, 0.40)
     return jsonify({"threshold": camera.confidence_threshold})
 
 
 # ==========================================
-# 9. HISTORY ROUTES
+# 10. HISTORY ROUTES
 # ==========================================
 @app.route('/history')
 def get_history():
@@ -724,61 +752,31 @@ def get_history():
                  FROM detections ORDER BY id DESC LIMIT 50''')
     rows = c.fetchall()
     conn.close()
-
-    history = []
-    for row in rows:
-        history.append({
-            "timestamp": row[0],
-            "pest_name": row[1],
-            "common_name": row[2],
-            "confidence": row[3],
-            "count": row[4],
-            "severity": row[5],
-            "crop": row[6],
-            "treatment": row[7]
-        })
-
-    return jsonify({"history": history})
+    return jsonify({"history": [
+        {"timestamp": r[0], "pest_name": r[1], "common_name": r[2],
+         "confidence": r[3], "count": r[4], "severity": r[5],
+         "crop": r[6], "treatment": r[7]} for r in rows
+    ]})
 
 
 @app.route('/history/stats')
 def get_stats():
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-
     c.execute("SELECT COUNT(*) FROM detections")
     total = c.fetchone()[0]
-
-    c.execute("""SELECT common_name, SUM(count) as total 
-                 FROM detections GROUP BY pest_name 
-                 ORDER BY total DESC LIMIT 5""")
+    c.execute("SELECT common_name, SUM(count) as total FROM detections GROUP BY pest_name ORDER BY total DESC LIMIT 5")
     top_pests = [{"name": r[0], "count": r[1]} for r in c.fetchall()]
-
-    c.execute("""SELECT DATE(timestamp) as day, COUNT(*) 
-                 FROM detections 
-                 WHERE timestamp >= DATE('now', '-7 days')
-                 GROUP BY day ORDER BY day""")
-    daily = [{"date": r[0], "count": r[1]} for r in c.fetchall()]
-
-    c.execute("""SELECT severity, COUNT(*) FROM detections 
-                 GROUP BY severity""")
+    c.execute("SELECT severity, COUNT(*) FROM detections GROUP BY severity")
     severity = {r[0]: r[1] for r in c.fetchall()}
-
     conn.close()
-
-    return jsonify({
-        "total_detections": total,
-        "top_pests": top_pests,
-        "daily_trend": daily,
-        "severity_breakdown": severity
-    })
+    return jsonify({"total_detections": total, "top_pests": top_pests, "severity_breakdown": severity})
 
 
 @app.route('/history/clear', methods=['POST'])
 def clear_history():
     conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute("DELETE FROM detections")
+    conn.execute("DELETE FROM detections")
     conn.commit()
     conn.close()
     return jsonify({"message": "History cleared"})
@@ -786,9 +784,19 @@ def clear_history():
 
 @app.route('/lookup/<pest_name>')
 def lookup_pest(pest_name):
-    info = get_smart_pest_info(pest_name)
-    return jsonify(info)
+    return jsonify(get_smart_pest_info(pest_name))
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # ── IMPORTANT: ssl_context='adhoc' enables HTTPS ──
+    # Phone cameras REQUIRE HTTPS to work via getUserMedia
+    # Install: pip install pyopenssl
+    # Then access from phone: https://YOUR_PC_IP:5000
+    
+    try:
+        # Try HTTPS first (needed for phone camera)
+        app.run(debug=False, host='0.0.0.0', port=5000, ssl_context='adhoc')
+    except Exception:
+        print("⚠️ HTTPS failed. Install pyopenssl: pip install pyopenssl")
+        print("⚠️ Running HTTP instead. Phone camera won't work over network.")
+        app.run(debug=True, host='0.0.0.0', port=5000)

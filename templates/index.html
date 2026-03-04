@@ -30,6 +30,7 @@
         --amber: #f59e0b;
         --blue: #3b82f6;
         --purple: #a855f7;
+        --orange: #f97316;
         --txt: #e4e4e7;
         --txt2: #a1a1aa;
         --txt3: #71717a;
@@ -80,7 +81,6 @@
         z-index: 1;
       }
 
-      /* Nav */
       nav {
         position: sticky;
         top: 0;
@@ -149,7 +149,6 @@
         color: var(--green);
       }
 
-      /* Hero */
       .hero {
         text-align: center;
         padding: 50px 0 24px;
@@ -173,7 +172,6 @@
         margin: 0 auto;
       }
 
-      /* Crop Selector */
       .crop-selector {
         display: flex;
         justify-content: center;
@@ -203,7 +201,6 @@
         border-color: var(--green);
       }
 
-      /* Tabs */
       .tabs-wrap {
         display: flex;
         justify-content: center;
@@ -223,8 +220,8 @@
         color: var(--txt2);
         font-family: var(--font);
         font-weight: 600;
-        font-size: 0.88rem;
-        padding: 10px 24px;
+        font-size: 0.85rem;
+        padding: 10px 20px;
         border-radius: 54px;
         cursor: pointer;
         transition: 0.3s;
@@ -238,7 +235,6 @@
         box-shadow: 0 0 24px var(--green-glow);
       }
 
-      /* Panels */
       .panel {
         display: none;
         animation: fadeUp 0.4s ease;
@@ -257,7 +253,6 @@
         }
       }
 
-      /* Upload */
       .upload-zone {
         max-width: 640px;
         margin: 0 auto;
@@ -314,7 +309,6 @@
         margin-top: 20px;
       }
 
-      /* Buttons */
       .btn {
         display: inline-flex;
         align-items: center;
@@ -346,6 +340,15 @@
         background: #2563eb;
         transform: translateY(-2px);
       }
+      .btn-capture {
+        background: var(--orange);
+        color: #fff;
+        box-shadow: 0 4px 24px rgba(249, 115, 22, 0.25);
+      }
+      .btn-capture:hover {
+        background: #ea580c;
+        transform: translateY(-2px);
+      }
       .btn-outline {
         background: transparent;
         border: 1.5px solid var(--border);
@@ -356,7 +359,6 @@
         color: var(--green);
       }
 
-      /* Warning */
       .warning-banner {
         max-width: 800px;
         margin: 12px auto;
@@ -372,6 +374,114 @@
       }
       .warning-banner.show {
         display: block;
+      }
+
+      /* ── Capture Tab ── */
+      .capture-container {
+        max-width: 640px;
+        margin: 0 auto;
+        text-align: center;
+      }
+      .capture-video-wrap {
+        position: relative;
+        border-radius: var(--radius);
+        overflow: hidden;
+        border: 1px solid var(--border);
+        background: var(--bg2);
+        aspect-ratio: 4/3;
+      }
+      .capture-video-wrap video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .capture-video-wrap canvas {
+        display: none;
+      }
+      .capture-video-wrap .cam-switch {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: rgba(0, 0, 0, 0.6);
+        border: none;
+        color: #fff;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .capture-video-wrap .cam-switch:hover {
+        background: rgba(34, 197, 94, 0.5);
+      }
+      .capture-preview {
+        display: none;
+      }
+      .capture-preview img {
+        width: 100%;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+      }
+      .capture-btns {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 20px;
+      }
+      .shutter-btn {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        border: 4px solid #fff;
+        background: transparent;
+        cursor: pointer;
+        position: relative;
+        transition: 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .shutter-btn::after {
+        content: "";
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: #fff;
+        transition: 0.2s;
+      }
+      .shutter-btn:hover::after {
+        background: var(--green);
+      }
+      .shutter-btn:active {
+        transform: scale(0.9);
+      }
+      .shutter-btn:active::after {
+        background: var(--red);
+      }
+      .capture-hint {
+        color: var(--txt3);
+        font-size: 0.82rem;
+        margin-top: 12px;
+      }
+      .camera-error {
+        color: var(--red);
+        text-align: center;
+        padding: 40px 20px;
+        font-size: 0.9rem;
+      }
+      .camera-error svg {
+        width: 48px;
+        height: 48px;
+        stroke: var(--red);
+        margin-bottom: 12px;
+        display: block;
+        margin: 0 auto 12px;
       }
 
       /* Camera */
@@ -466,8 +576,6 @@
         margin-top: 16px;
         align-items: center;
       }
-
-      /* Confidence Selector */
       .conf-selector {
         display: flex;
         gap: 4px;
@@ -497,7 +605,6 @@
         color: #fff;
       }
 
-      /* Loader */
       .loader-overlay {
         display: none;
         position: fixed;
@@ -542,7 +649,6 @@
         }
       }
 
-      /* Results */
       .results {
         margin: 40px auto;
         max-width: 1200px;
@@ -612,7 +718,6 @@
         border-radius: 4px;
       }
 
-      /* Detection Card */
       .det-card {
         background: var(--card);
         border: 1px solid var(--border);
@@ -711,7 +816,6 @@
         margin-bottom: 12px;
       }
 
-      /* History Modal */
       .modal-overlay {
         display: none;
         position: fixed;
@@ -811,10 +915,11 @@
           font-size: 1.8rem;
         }
         .tabs button {
-          padding: 8px 16px;
-          font-size: 0.8rem;
+          padding: 8px 14px;
+          font-size: 0.78rem;
         }
-        .scan-buttons {
+        .scan-buttons,
+        .capture-btns {
           flex-direction: column;
           align-items: center;
         }
@@ -861,13 +966,13 @@
     <section class="hero container">
       <h1>Identify Pests.<br /><span class="gr">Protect Crops.</span></h1>
       <p>
-        Upload a photo or use your camera — AI detects pests and recommends
-        treatment instantly.
+        Upload a photo, capture from camera, or use live detection — AI
+        identifies pests and recommends treatment.
       </p>
     </section>
 
     <div class="container">
-      <div class="crop-selector" id="cropSelector">
+      <div class="crop-selector">
         <button class="crop-chip active" data-crop="Unknown">
           🌾 Any Crop
         </button>
@@ -883,15 +988,16 @@
 
     <div class="tabs-wrap container">
       <div class="tabs">
-        <button class="active" data-tab="upload">📷 Upload Image</button>
-        <button data-tab="camera">🎥 Live Camera</button>
+        <button class="active" data-tab="upload">📁 Upload</button>
+        <button data-tab="capture">📸 Capture</button>
+        <button data-tab="camera">🎥 Live</button>
       </div>
     </div>
 
     <div class="warning-banner container" id="warningBanner"></div>
 
     <div class="container">
-      <!-- Upload Panel -->
+      <!-- ── Upload Panel ── -->
       <div id="panel-upload" class="panel active">
         <div class="upload-zone" id="dropZone">
           <svg
@@ -923,7 +1029,57 @@
         </div>
       </div>
 
-      <!-- Camera Panel -->
+      <!-- ── Capture Panel (NEW) ── -->
+      <div id="panel-capture" class="panel">
+        <div class="capture-container">
+          <div class="capture-video-wrap" id="captureVideoWrap">
+            <video id="captureVideo" autoplay playsinline muted></video>
+            <canvas id="captureCanvas"></canvas>
+            <button class="cam-switch" id="switchCamBtn" title="Switch Camera">
+              🔄
+            </button>
+          </div>
+          <div class="capture-preview" id="capturePreview">
+            <img id="capturedImg" src="" alt="Captured" />
+          </div>
+          <div class="capture-btns" id="captureBtns">
+            <button class="btn btn-outline" id="openCaptureBtn">
+              📷 Open Camera
+            </button>
+          </div>
+          <div
+            class="capture-btns"
+            id="captureShutterWrap"
+            style="display: none"
+          >
+            <button
+              class="shutter-btn"
+              id="shutterBtn"
+              title="Take Photo"
+            ></button>
+          </div>
+          <div
+            class="capture-btns"
+            id="captureActionBtns"
+            style="display: none"
+          >
+            <button class="btn btn-primary" id="captureScanBtn">
+              ⚡ Scan This Photo
+            </button>
+            <button class="btn btn-deep" id="captureDeepBtn">
+              🧠 Deep Scan
+            </button>
+            <button class="btn btn-outline" id="captureRetakeBtn">
+              🔄 Retake
+            </button>
+          </div>
+          <p class="capture-hint" id="captureHint">
+            Open your camera and point at the affected plant to capture a photo.
+          </p>
+        </div>
+      </div>
+
+      <!-- ── Live Camera Panel ── -->
       <div id="panel-camera" class="panel">
         <div class="cam-container">
           <div class="cam-feed">
@@ -1040,6 +1196,11 @@
           document
             .getElementById("panel-" + btn.dataset.tab)
             .classList.add("active");
+
+          // Stop capture camera when switching away
+          if (btn.dataset.tab !== "capture" && captureStream) {
+            stopCaptureCamera();
+          }
         });
       });
 
@@ -1126,6 +1287,11 @@
             cl: "#3b82f6",
             txt: "🧠 Deep",
           },
+          capture: {
+            bg: "rgba(249,115,22,0.15)",
+            cl: "#f97316",
+            txt: "📸 Capture",
+          },
           live: { bg: "rgba(239,68,68,0.12)", cl: "#ef4444", txt: "● Live" },
           unverified: {
             bg: "rgba(161,161,170,0.1)",
@@ -1138,75 +1304,72 @@
       }
 
       function stabilityDots(framesSeen) {
-        const max = 10;
-        const filled = Math.min(framesSeen || 0, max);
+        const max = 10,
+          filled = Math.min(framesSeen || 0, max);
         let dots = "";
-        for (let i = 0; i < max; i++) {
+        for (let i = 0; i < max; i++)
           dots += `<span class="${i < filled ? "filled" : ""}"></span>`;
-        }
-        return `<div class="stability-bar">
-        <div class="stability-dots">${dots}</div>
-        <span>Stability: ${filled}/${max}</span>
-      </div>`;
+        return `<div class="stability-bar"><div class="stability-dots">${dots}</div><span>Stability: ${filled}/${max}</span></div>`;
       }
 
       function infoRow(icon, label, value, color) {
         if (!value) return "";
         return `<div style="display:flex;gap:10px;align-items:start;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-        <span style="font-size:1rem;flex-shrink:0;margin-top:1px;">${icon}</span>
-        <div style="font-size:0.82rem;line-height:1.5;">
-          <span style="color:#71717a;font-weight:600;">${label}</span><br>
-          <span style="color:${color || "#d4d4d8"};font-weight:500;">${value}</span>
-        </div>
-      </div>`;
+      <span style="font-size:1rem;flex-shrink:0;margin-top:1px;">${icon}</span>
+      <div style="font-size:0.82rem;line-height:1.5;">
+        <span style="color:#71717a;font-weight:600;">${label}</span><br>
+        <span style="color:${color || "#d4d4d8"};font-weight:500;">${value}</span>
+      </div>
+    </div>`;
       }
 
       function buildCardHTML(d, showStability) {
         return `
-      <div class="det-card">
-        <div class="top">
-          <div>
-            <span class="pest-name">${d.common_name || d.name}</span>
-            ${verifiedBadge(d.verified || "unverified")}
-            <span style="display:block;font-size:0.72rem;color:#71717a;margin-top:2px;font-style:italic;">${d.name}</span>
-            ${d.gemini_note ? `<span style="display:block;font-size:0.72rem;color:#f59e0b;margin-top:4px;">⚠ ${d.gemini_note}</span>` : ""}
-          </div>
-          <span style="display:flex;gap:8px;align-items:center;">
-            ${severityBadge(d.severity || "unknown")}
-            <span class="pest-count">×${d.count}</span>
-          </span>
+    <div class="det-card">
+      <div class="top">
+        <div>
+          <span class="pest-name">${d.common_name || d.name}</span>
+          ${verifiedBadge(d.verified || "unverified")}
+          <span style="display:block;font-size:0.72rem;color:#71717a;margin-top:2px;font-style:italic;">${d.name}</span>
+          ${d.gemini_note ? `<span style="display:block;font-size:0.72rem;color:#f59e0b;margin-top:4px;">⚠ ${d.gemini_note}</span>` : ""}
         </div>
-        <div class="conf-bar"><div class="conf-fill" style="width:${d.confidence}%"></div></div>
-        <div class="meta">
-          <span>Confidence: <strong>${d.confidence}%</strong></span>
-          ${d.best_confidence ? `<span>Peak: <strong>${d.best_confidence}%</strong></span>` : ""}
-          ${d.crops_at_risk ? `<span>Crops: <strong>${d.crops_at_risk}</strong></span>` : ""}
-        </div>
-        ${showStability && d.frames_seen ? stabilityDots(d.frames_seen) : ""}
-        <div style="margin-top:8px;">
-          ${infoRow("⚡", "URGENT ACTION", d.quick_action, "#fbbf24")}
-          ${infoRow("💀", "DAMAGE", d.damage, "#f87171")}
-          ${infoRow("🔍", "HOW TO IDENTIFY", d.identify, "#d4d4d8")}
-          ${infoRow("💊", "CHEMICAL", d.chemical, "#22c55e")}
-          ${infoRow("🌿", "ORGANIC", d.organic, "#a3e635")}
-          ${infoRow("🛡️", "PREVENTION", d.prevention, "#93c5fd")}
-        </div>
-      </div>`;
+        <span style="display:flex;gap:8px;align-items:center;">
+          ${severityBadge(d.severity || "unknown")}
+          <span class="pest-count">×${d.count}</span>
+        </span>
+      </div>
+      <div class="conf-bar"><div class="conf-fill" style="width:${d.confidence}%"></div></div>
+      <div class="meta">
+        <span>Confidence: <strong>${d.confidence}%</strong></span>
+        ${d.best_confidence ? `<span>Peak: <strong>${d.best_confidence}%</strong></span>` : ""}
+        ${d.crops_at_risk ? `<span>Crops: <strong>${d.crops_at_risk}</strong></span>` : ""}
+      </div>
+      ${showStability && d.frames_seen ? stabilityDots(d.frames_seen) : ""}
+      <div style="margin-top:8px;">
+        ${infoRow("⚡", "URGENT ACTION", d.quick_action, "#fbbf24")}
+        ${infoRow("💀", "DAMAGE", d.damage, "#f87171")}
+        ${infoRow("🔍", "HOW TO IDENTIFY", d.identify, "#d4d4d8")}
+        ${infoRow("💊", "CHEMICAL", d.chemical, "#22c55e")}
+        ${infoRow("🌿", "ORGANIC", d.organic, "#a3e635")}
+        ${infoRow("🛡️", "PREVENTION", d.prevention, "#93c5fd")}
+      </div>
+    </div>`;
       }
 
-      /* ── Scan Function ─────────────────────────── */
-      async function runScan(endpoint, loaderMsg, badgeText, badgeColor) {
-        if (!selectedFile) return;
+      /* ── Scan (Upload) ─────────────────────────── */
+      async function runScan(
+        endpoint,
+        loaderMsg,
+        badgeText,
+        badgeColor,
+        formData,
+      ) {
         const loader = document.getElementById("loader");
         document.getElementById("loaderText").textContent = loaderMsg;
         loader.classList.add("show");
 
-        const form = new FormData();
-        form.append("image", selectedFile);
-        form.append("crop", selectedCrop);
-
         try {
-          const res = await fetch(endpoint, { method: "POST", body: form });
+          const res = await fetch(endpoint, { method: "POST", body: formData });
           const data = await res.json();
           loader.classList.remove("show");
           if (data.error) {
@@ -1235,17 +1398,30 @@
       }
 
       document.getElementById("analyzeBtn").addEventListener("click", () => {
-        runScan("/detect", "Scanning + AI verifying…", "⚡ Quick Scan", {
-          bg: "rgba(34,197,94,0.15)",
-          cl: "#22c55e",
-        });
+        if (!selectedFile) return;
+        const form = new FormData();
+        form.append("image", selectedFile);
+        form.append("crop", selectedCrop);
+        runScan(
+          "/detect",
+          "Scanning + AI verifying…",
+          "⚡ Quick Scan",
+          { bg: "rgba(34,197,94,0.15)", cl: "#22c55e" },
+          form,
+        );
       });
+
       document.getElementById("deepScanBtn").addEventListener("click", () => {
+        if (!selectedFile) return;
+        const form = new FormData();
+        form.append("image", selectedFile);
+        form.append("crop", selectedCrop);
         runScan(
           "/detect_deep",
           "Running deep multi-scale analysis…",
           "🧠 Deep Scan",
           { bg: "rgba(59,130,246,0.15)", cl: "#3b82f6" },
+          form,
         );
       });
 
@@ -1258,10 +1434,10 @@
 
         if (!detections.length) {
           cards.innerHTML = `<div class="no-det">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-          </svg>
-          <p>No pests detected — crop looks healthy! 🌱</p></div>`;
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <p>No pests detected — crop looks healthy! 🌱</p></div>`;
           counter.textContent = "0 pests";
         } else {
           let total = detections.reduce((s, d) => s + d.count, 0);
@@ -1275,7 +1451,237 @@
         section.scrollIntoView({ behavior: "smooth", block: "start" });
       }
 
-      /* ── Live Camera (Smooth) ──────────────────── */
+      /* ══════════════════════════════════════════════
+     📸 CAPTURE TAB — Browser Camera (Phone/Laptop)
+     ══════════════════════════════════════════════ */
+      let captureStream = null;
+      let currentFacingMode = "environment"; // "environment" = back camera, "user" = front
+      let capturedBase64 = null;
+
+      const captureVideo = document.getElementById("captureVideo");
+      const captureCanvas = document.getElementById("captureCanvas");
+      const captureVideoWrap = document.getElementById("captureVideoWrap");
+      const capturePreview = document.getElementById("capturePreview");
+      const capturedImg = document.getElementById("capturedImg");
+      const captureHint = document.getElementById("captureHint");
+
+      async function startCaptureCamera(facingMode) {
+        // Stop existing stream
+        if (captureStream) {
+          captureStream.getTracks().forEach((t) => t.stop());
+        }
+
+        try {
+          captureStream = await navigator.mediaDevices.getUserMedia({
+            video: {
+              facingMode: facingMode,
+              width: { ideal: 1920 },
+              height: { ideal: 1080 },
+            },
+            audio: false,
+          });
+
+          captureVideo.srcObject = captureStream;
+          captureVideo.style.display = "block";
+          captureVideoWrap.style.display = "block";
+          capturePreview.style.display = "none";
+          document.getElementById("captureBtns").style.display = "none";
+          document.getElementById("captureShutterWrap").style.display = "flex";
+          document.getElementById("captureActionBtns").style.display = "none";
+          captureHint.textContent =
+            "Point at the affected plant and tap the shutter button.";
+
+          currentFacingMode = facingMode;
+        } catch (err) {
+          console.error("Camera error:", err);
+
+          // If back camera fails, try front camera
+          if (facingMode === "environment") {
+            try {
+              captureStream = await navigator.mediaDevices.getUserMedia({
+                video: {
+                  facingMode: "user",
+                  width: { ideal: 1920 },
+                  height: { ideal: 1080 },
+                },
+                audio: false,
+              });
+              captureVideo.srcObject = captureStream;
+              captureVideo.style.display = "block";
+              captureVideoWrap.style.display = "block";
+              capturePreview.style.display = "none";
+              document.getElementById("captureBtns").style.display = "none";
+              document.getElementById("captureShutterWrap").style.display =
+                "flex";
+              document.getElementById("captureActionBtns").style.display =
+                "none";
+              captureHint.textContent =
+                "Using front camera. Point at the plant.";
+              currentFacingMode = "user";
+              return;
+            } catch (e) {
+              // Both cameras failed
+            }
+          }
+
+          captureVideoWrap.innerHTML = `
+        <div class="camera-error">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/>
+          </svg>
+          <p><strong>Camera access denied or not available.</strong></p>
+          <p style="margin-top:8px;font-size:0.82rem;color:var(--txt3);">
+            Make sure you're using <strong>HTTPS</strong> and have granted camera permissions.<br>
+            On phone: open <strong>https://${window.location.hostname}:5000</strong>
+          </p>
+        </div>`;
+          captureHint.textContent = "";
+        }
+      }
+
+      function stopCaptureCamera() {
+        if (captureStream) {
+          captureStream.getTracks().forEach((t) => t.stop());
+          captureStream = null;
+        }
+        captureVideo.srcObject = null;
+        captureVideo.style.display = "block";
+        capturePreview.style.display = "none";
+        document.getElementById("captureBtns").style.display = "flex";
+        document.getElementById("captureShutterWrap").style.display = "none";
+        document.getElementById("captureActionBtns").style.display = "none";
+        captureHint.textContent =
+          "Open your camera and point at the affected plant to capture a photo.";
+      }
+
+      // Open Camera button
+      document
+        .getElementById("openCaptureBtn")
+        .addEventListener("click", () => {
+          startCaptureCamera("environment");
+        });
+
+      // Switch camera (front/back)
+      document.getElementById("switchCamBtn").addEventListener("click", () => {
+        const newMode =
+          currentFacingMode === "environment" ? "user" : "environment";
+        startCaptureCamera(newMode);
+      });
+
+      // Shutter button — take photo
+      document.getElementById("shutterBtn").addEventListener("click", () => {
+        if (!captureStream) return;
+
+        // Set canvas to video dimensions
+        captureCanvas.width = captureVideo.videoWidth;
+        captureCanvas.height = captureVideo.videoHeight;
+        const ctx = captureCanvas.getContext("2d");
+
+        // If front camera, mirror the image
+        if (currentFacingMode === "user") {
+          ctx.translate(captureCanvas.width, 0);
+          ctx.scale(-1, 1);
+        }
+
+        ctx.drawImage(captureVideo, 0, 0);
+
+        // Convert to base64
+        capturedBase64 = captureCanvas.toDataURL("image/jpeg", 0.92);
+        capturedImg.src = capturedBase64;
+
+        // Show preview, hide video
+        captureVideo.style.display = "none";
+        capturePreview.style.display = "block";
+        document.getElementById("captureShutterWrap").style.display = "none";
+        document.getElementById("captureActionBtns").style.display = "flex";
+        captureHint.textContent = "Photo captured! Scan it or retake.";
+
+        // Stop camera to save battery
+        if (captureStream) {
+          captureStream.getTracks().forEach((t) => t.stop());
+          captureStream = null;
+        }
+      });
+
+      // Retake button
+      document
+        .getElementById("captureRetakeBtn")
+        .addEventListener("click", () => {
+          capturedBase64 = null;
+          startCaptureCamera(currentFacingMode);
+        });
+
+      // Scan captured photo (Quick)
+      document
+        .getElementById("captureScanBtn")
+        .addEventListener("click", async () => {
+          if (!capturedBase64) return;
+          const loader = document.getElementById("loader");
+          document.getElementById("loaderText").textContent =
+            "Analyzing captured photo…";
+          loader.classList.add("show");
+
+          try {
+            const res = await fetch("/detect_capture", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                image: capturedBase64,
+                crop: selectedCrop,
+              }),
+            });
+            const data = await res.json();
+            loader.classList.remove("show");
+            if (data.error) {
+              alert(data.error);
+              return;
+            }
+
+            const banner = document.getElementById("warningBanner");
+            if (data.warning) {
+              banner.textContent = "⚠️ " + data.warning;
+              banner.classList.add("show");
+            } else {
+              banner.classList.remove("show");
+            }
+
+            const badge = document.getElementById("scanType");
+            badge.textContent = "📸 Capture Scan";
+            badge.style.background = "rgba(249,115,22,0.15)";
+            badge.style.color = "#f97316";
+
+            showResults(data.result_image_url, data.detections);
+          } catch (err) {
+            loader.classList.remove("show");
+            alert("Scan failed: " + err.message);
+          }
+        });
+
+      // Deep scan captured photo
+      document
+        .getElementById("captureDeepBtn")
+        .addEventListener("click", async () => {
+          if (!capturedBase64) return;
+
+          // Convert base64 to File and use existing deep scan
+          const res = await fetch(capturedBase64);
+          const blob = await res.blob();
+          const file = new File([blob], "capture.jpg", { type: "image/jpeg" });
+
+          const form = new FormData();
+          form.append("image", file);
+          form.append("crop", selectedCrop);
+
+          runScan(
+            "/detect_deep",
+            "Deep scanning captured photo…",
+            "🧠 Deep Capture",
+            { bg: "rgba(59,130,246,0.15)", cl: "#3b82f6" },
+            form,
+          );
+        });
+
+      /* ── Live Camera ───────────────────────────── */
       const startBtn = document.getElementById("startCam");
       const stopBtn = document.getElementById("stopCam");
       const camStream = document.getElementById("camStream");
@@ -1284,14 +1690,12 @@
       const fpsBadge = document.getElementById("fpsBadge");
       const camSide = document.getElementById("camSidebar");
       const confSelector = document.getElementById("confSelector");
-      let polling = null;
-      let fpsInterval = null;
-      let frameCount = 0;
+      let polling = null,
+        fpsInterval = null,
+        frameCount = 0;
 
       startBtn.addEventListener("click", async () => {
-        // Tell server to start camera
         await fetch("/start_camera");
-
         camStream.src = "/video_feed?" + Date.now();
         camStream.style.display = "block";
         camPlace.style.display = "none";
@@ -1301,11 +1705,7 @@
         startBtn.style.display = "none";
         stopBtn.style.display = "inline-flex";
         document.getElementById("camEmpty").style.display = "none";
-
-        // Poll detections every 1 second
         polling = setInterval(pollDetections, 1000);
-
-        // FPS counter
         frameCount = 0;
         camStream.onload = () => frameCount++;
         fpsInterval = setInterval(() => {
@@ -1329,7 +1729,6 @@
         camSide.innerHTML = '<div class="empty-state">Camera stopped.</div>';
       });
 
-      // Confidence level buttons
       document.querySelectorAll(".conf-btn").forEach((btn) => {
         btn.addEventListener("click", async () => {
           document
@@ -1354,33 +1753,28 @@
             '<div class="empty-state">Scanning… No pests detected yet.</div>';
           return;
         }
-        let html = `<div style="font-weight:700;font-size:0.95rem;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
-        <span>🔴 Live Detections</span>
-        <span style="font-size:0.75rem;color:var(--txt3);">${dets.length} pest${dets.length > 1 ? "s" : ""} tracked</span>
-      </div>`;
+        let html = `<div style="font-weight:700;font-size:0.95rem;margin-bottom:8px;display:flex;justify-content:space-between;">
+      <span>🔴 Live Detections</span><span style="font-size:0.75rem;color:var(--txt3);">${dets.length} tracked</span></div>`;
         dets.forEach((d) => {
           html += buildCardHTML(d, true);
         });
         camSide.innerHTML = html;
       }
 
-      /* ── History Modal ─────────────────────────── */
+      /* ── History ───────────────────────────────── */
       document
         .getElementById("historyBtn")
         .addEventListener("click", async () => {
           document.getElementById("historyModal").classList.add("show");
           try {
-            const statsRes = await fetch("/history/stats");
-            const stats = await statsRes.json();
+            const s = await (await fetch("/history/stats")).json();
             document.getElementById("statsGrid").innerHTML = `
-          <div class="stat-card"><div class="num">${stats.total_detections}</div><div class="label">Total Detections</div></div>
-          <div class="stat-card"><div class="num">${stats.top_pests.length > 0 ? stats.top_pests[0].name : "None"}</div><div class="label">Most Common</div></div>
-          <div class="stat-card"><div class="num" style="color:${(stats.severity_breakdown.high || 0) > 5 ? "var(--red)" : "var(--green)"}">${stats.severity_breakdown.high || 0}</div><div class="label">High Severity</div></div>`;
+        <div class="stat-card"><div class="num">${s.total_detections}</div><div class="label">Total</div></div>
+        <div class="stat-card"><div class="num">${s.top_pests.length > 0 ? s.top_pests[0].name : "None"}</div><div class="label">Most Common</div></div>
+        <div class="stat-card"><div class="num" style="color:${(s.severity_breakdown.high || 0) > 5 ? "var(--red)" : "var(--green)"}">${s.severity_breakdown.high || 0}</div><div class="label">High Severity</div></div>`;
           } catch (_) {}
-
           try {
-            const histRes = await fetch("/history");
-            const data = await histRes.json();
+            const data = await (await fetch("/history")).json();
             const list = document.getElementById("historyList");
             if (!data.history.length) {
               list.innerHTML =
@@ -1388,26 +1782,19 @@
             } else {
               list.innerHTML = data.history
                 .map(
-                  (h) => `
-            <div class="history-item">
-              <div class="pest-info">
-                <span class="name">${h.common_name}</span>
-                <span class="date">${h.timestamp} · ${h.crop}</span>
-              </div>
-              <div style="text-align:right">
-                ${severityBadge(h.severity)}
-                <div style="font-size:0.75rem;color:var(--txt3);margin-top:4px;">${h.confidence}%</div>
-              </div>
-            </div>`,
+                  (h) =>
+                    `<div class="history-item"><div class="pest-info"><span class="name">${h.common_name}</span><span class="date">${h.timestamp} · ${h.crop}</span></div><div style="text-align:right">${severityBadge(h.severity)}<div style="font-size:0.75rem;color:var(--txt3);margin-top:4px;">${h.confidence}%</div></div></div>`,
                 )
                 .join("");
             }
           } catch (_) {}
         });
 
-      document.getElementById("closeHistory").addEventListener("click", () => {
-        document.getElementById("historyModal").classList.remove("show");
-      });
+      document
+        .getElementById("closeHistory")
+        .addEventListener("click", () =>
+          document.getElementById("historyModal").classList.remove("show"),
+        );
       document.getElementById("historyModal").addEventListener("click", (e) => {
         if (e.target === e.currentTarget)
           e.currentTarget.classList.remove("show");
@@ -1415,10 +1802,10 @@
       document
         .getElementById("clearHistoryBtn")
         .addEventListener("click", async () => {
-          if (confirm("Clear all detection history?")) {
+          if (confirm("Clear all history?")) {
             await fetch("/history/clear", { method: "POST" });
             document.getElementById("historyList").innerHTML =
-              '<div style="text-align:center;color:var(--txt3);padding:20px;">History cleared.</div>';
+              '<div style="text-align:center;color:var(--txt3);padding:20px;">Cleared.</div>';
             document.getElementById("statsGrid").innerHTML = "";
           }
         });
