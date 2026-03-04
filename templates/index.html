@@ -30,6 +30,7 @@
         --amber: #f59e0b;
         --blue: #3b82f6;
         --purple: #a855f7;
+        --orange: #f97316;
         --txt: #e4e4e7;
         --txt2: #a1a1aa;
         --txt3: #71717a;
@@ -79,7 +80,7 @@
         position: relative;
         z-index: 1;
       }
-      /* ── Nav ── */
+
       nav {
         position: sticky;
         top: 0;
@@ -147,17 +148,17 @@
         border-color: var(--green);
         color: var(--green);
       }
-      /* ── Hero ── */
+
       .hero {
         text-align: center;
-        padding: 60px 0 32px;
+        padding: 50px 0 24px;
       }
       .hero h1 {
         font-size: clamp(2rem, 5vw, 3.4rem);
         font-weight: 900;
         letter-spacing: -1.5px;
         line-height: 1.15;
-        margin-bottom: 16px;
+        margin-bottom: 12px;
       }
       .hero h1 .gr {
         background: linear-gradient(135deg, var(--green), var(--lime));
@@ -170,13 +171,13 @@
         max-width: 560px;
         margin: 0 auto;
       }
-      /* ── Crop Selector ── */
+
       .crop-selector {
         display: flex;
         justify-content: center;
         gap: 8px;
         flex-wrap: wrap;
-        margin: 24px 0 8px;
+        margin: 20px 0 8px;
       }
       .crop-chip {
         padding: 6px 16px;
@@ -199,11 +200,11 @@
         color: #fff;
         border-color: var(--green);
       }
-      /* ── Tabs ── */
+
       .tabs-wrap {
         display: flex;
         justify-content: center;
-        margin: 28px 0 28px;
+        margin: 24px 0;
       }
       .tabs {
         display: inline-flex;
@@ -219,8 +220,8 @@
         color: var(--txt2);
         font-family: var(--font);
         font-weight: 600;
-        font-size: 0.88rem;
-        padding: 10px 24px;
+        font-size: 0.85rem;
+        padding: 10px 20px;
         border-radius: 54px;
         cursor: pointer;
         transition: 0.3s;
@@ -233,7 +234,7 @@
         color: #fff;
         box-shadow: 0 0 24px var(--green-glow);
       }
-      /* ── Panels ── */
+
       .panel {
         display: none;
         animation: fadeUp 0.4s ease;
@@ -251,7 +252,7 @@
           transform: translateY(0);
         }
       }
-      /* ── Upload Zone ── */
+
       .upload-zone {
         max-width: 640px;
         margin: 0 auto;
@@ -307,7 +308,7 @@
         flex-wrap: wrap;
         margin-top: 20px;
       }
-      /* ── Buttons ── */
+
       .btn {
         display: inline-flex;
         align-items: center;
@@ -339,6 +340,15 @@
         background: #2563eb;
         transform: translateY(-2px);
       }
+      .btn-capture {
+        background: var(--orange);
+        color: #fff;
+        box-shadow: 0 4px 24px rgba(249, 115, 22, 0.25);
+      }
+      .btn-capture:hover {
+        background: #ea580c;
+        transform: translateY(-2px);
+      }
       .btn-outline {
         background: transparent;
         border: 1.5px solid var(--border);
@@ -348,10 +358,10 @@
         border-color: var(--green);
         color: var(--green);
       }
-      /* ── Warning Banner ── */
+
       .warning-banner {
         max-width: 800px;
-        margin: 16px auto;
+        margin: 12px auto;
         padding: 12px 20px;
         border-radius: var(--radius-sm);
         background: rgba(245, 158, 11, 0.1);
@@ -365,7 +375,116 @@
       .warning-banner.show {
         display: block;
       }
-      /* ── Camera ── */
+
+      /* ── Capture Tab ── */
+      .capture-container {
+        max-width: 640px;
+        margin: 0 auto;
+        text-align: center;
+      }
+      .capture-video-wrap {
+        position: relative;
+        border-radius: var(--radius);
+        overflow: hidden;
+        border: 1px solid var(--border);
+        background: var(--bg2);
+        aspect-ratio: 4/3;
+      }
+      .capture-video-wrap video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .capture-video-wrap canvas {
+        display: none;
+      }
+      .capture-video-wrap .cam-switch {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: rgba(0, 0, 0, 0.6);
+        border: none;
+        color: #fff;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .capture-video-wrap .cam-switch:hover {
+        background: rgba(34, 197, 94, 0.5);
+      }
+      .capture-preview {
+        display: none;
+      }
+      .capture-preview img {
+        width: 100%;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+      }
+      .capture-btns {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 20px;
+      }
+      .shutter-btn {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        border: 4px solid #fff;
+        background: transparent;
+        cursor: pointer;
+        position: relative;
+        transition: 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .shutter-btn::after {
+        content: "";
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: #fff;
+        transition: 0.2s;
+      }
+      .shutter-btn:hover::after {
+        background: var(--green);
+      }
+      .shutter-btn:active {
+        transform: scale(0.9);
+      }
+      .shutter-btn:active::after {
+        background: var(--red);
+      }
+      .capture-hint {
+        color: var(--txt3);
+        font-size: 0.82rem;
+        margin-top: 12px;
+      }
+      .camera-error {
+        color: var(--red);
+        text-align: center;
+        padding: 40px 20px;
+        font-size: 0.9rem;
+      }
+      .camera-error svg {
+        width: 48px;
+        height: 48px;
+        stroke: var(--red);
+        margin-bottom: 12px;
+        display: block;
+        margin: 0 auto 12px;
+      }
+
+      /* Camera */
       .cam-container {
         display: flex;
         gap: 24px;
@@ -374,13 +493,13 @@
       }
       .cam-feed {
         flex: 1 1 640px;
-        max-width: 640px;
+        max-width: 720px;
         position: relative;
       }
       .cam-feed .placeholder,
       .cam-feed img {
         width: 100%;
-        aspect-ratio: 4/3;
+        aspect-ratio: 16/9;
         object-fit: cover;
         border-radius: var(--radius);
         border: 1px solid var(--border);
@@ -415,6 +534,18 @@
         background: var(--red);
         animation: pulse 1s infinite;
       }
+      .cam-feed .fps-badge {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        display: none;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 5px 12px;
+        border-radius: 40px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: var(--green);
+      }
       @keyframes pulse {
         0%,
         100% {
@@ -426,7 +557,7 @@
       }
       .cam-sidebar {
         flex: 1 1 280px;
-        max-width: 360px;
+        max-width: 400px;
         display: flex;
         flex-direction: column;
         gap: 12px;
@@ -437,13 +568,43 @@
         padding: 40px 0;
         font-size: 0.9rem;
       }
-      .cam-btns {
+      .cam-controls {
         display: flex;
         gap: 10px;
         justify-content: center;
+        flex-wrap: wrap;
         margin-top: 16px;
+        align-items: center;
       }
-      /* ── Loader ── */
+      .conf-selector {
+        display: flex;
+        gap: 4px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 40px;
+        padding: 3px;
+        margin-left: 10px;
+      }
+      .conf-btn {
+        border: none;
+        background: transparent;
+        color: var(--txt3);
+        font-family: var(--font);
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 6px 14px;
+        border-radius: 30px;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+      .conf-btn:hover {
+        color: #fff;
+      }
+      .conf-btn.active {
+        background: var(--green);
+        color: #fff;
+      }
+
       .loader-overlay {
         display: none;
         position: fixed;
@@ -487,7 +648,7 @@
           opacity: 1;
         }
       }
-      /* ── Results ── */
+
       .results {
         margin: 40px auto;
         max-width: 1200px;
@@ -556,12 +717,12 @@
         background: var(--border);
         border-radius: 4px;
       }
-      /* ── Detection Card ── */
+
       .det-card {
         background: var(--card);
         border: 1px solid var(--border);
         border-radius: var(--radius-sm);
-        padding: 18px 20px;
+        padding: 16px 18px;
         transition: 0.3s;
       }
       .det-card:hover {
@@ -572,7 +733,7 @@
         display: flex;
         justify-content: space-between;
         align-items: start;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
       }
       .det-card .pest-name {
         font-weight: 700;
@@ -591,7 +752,7 @@
         height: 4px;
         border-radius: 4px;
         background: var(--border);
-        margin-bottom: 10px;
+        margin-bottom: 8px;
         overflow: hidden;
       }
       .det-card .conf-fill {
@@ -602,7 +763,7 @@
       .det-card .meta {
         display: flex;
         gap: 14px;
-        font-size: 0.8rem;
+        font-size: 0.78rem;
         color: var(--txt2);
         flex-wrap: wrap;
         margin-bottom: 4px;
@@ -615,11 +776,32 @@
         display: inline-flex;
         align-items: center;
         gap: 4px;
-        font-size: 0.7rem;
+        font-size: 0.68rem;
         padding: 2px 8px;
         border-radius: 12px;
         font-weight: 600;
-        margin-left: 8px;
+        margin-left: 6px;
+      }
+      .stability-bar {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.72rem;
+        color: var(--txt3);
+        margin: 6px 0;
+      }
+      .stability-dots {
+        display: flex;
+        gap: 3px;
+      }
+      .stability-dots span {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--border);
+      }
+      .stability-dots span.filled {
+        background: var(--green);
       }
       .no-det {
         text-align: center;
@@ -633,7 +815,7 @@
         stroke: var(--txt3);
         margin-bottom: 12px;
       }
-      /* ── History Modal ── */
+
       .modal-overlay {
         display: none;
         position: fixed;
@@ -718,10 +900,7 @@
         color: var(--txt3);
         font-size: 0.75rem;
       }
-      .history-item .right {
-        text-align: right;
-      }
-      /* ── Footer ── */
+
       footer {
         text-align: center;
         padding: 48px 24px 32px;
@@ -730,15 +909,17 @@
         border-top: 1px solid var(--border);
         margin-top: 64px;
       }
+
       @media (max-width: 640px) {
         .hero h1 {
           font-size: 1.8rem;
         }
         .tabs button {
-          padding: 8px 16px;
-          font-size: 0.8rem;
+          padding: 8px 14px;
+          font-size: 0.78rem;
         }
-        .scan-buttons {
+        .scan-buttons,
+        .capture-btns {
           flex-direction: column;
           align-items: center;
         }
@@ -758,22 +939,19 @@
           font-size: 0.75rem;
           padding: 5px 12px;
         }
+        .cam-controls {
+          flex-direction: column;
+        }
       }
     </style>
   </head>
   <body>
-    <!-- ── Nav ── -->
     <nav>
       <div class="inner">
         <a href="/" class="logo">
           <svg viewBox="0 0 24 24">
             <path
-              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10
-     10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93
-     0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54
-     c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2
-     c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41
-     c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"
+              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"
             />
           </svg>
           <span>AgriGuard</span>
@@ -785,18 +963,16 @@
       </div>
     </nav>
 
-    <!-- ── Hero ── -->
     <section class="hero container">
       <h1>Identify Pests.<br /><span class="gr">Protect Crops.</span></h1>
       <p>
-        Upload a photo or use your camera — AI detects pests and recommends
-        treatment instantly.
+        Upload a photo, capture from camera, or use live detection — AI
+        identifies pests and recommends treatment.
       </p>
     </section>
 
-    <!-- ── Crop Selector ── -->
     <div class="container">
-      <div class="crop-selector" id="cropSelector">
+      <div class="crop-selector">
         <button class="crop-chip active" data-crop="Unknown">
           🌾 Any Crop
         </button>
@@ -810,15 +986,14 @@
       </div>
     </div>
 
-    <!-- ── Mode Tabs ── -->
     <div class="tabs-wrap container">
       <div class="tabs">
-        <button class="active" data-tab="upload">📷 Upload Image</button>
-        <button data-tab="camera">🎥 Live Camera</button>
+        <button class="active" data-tab="upload">📁 Upload</button>
+        <button data-tab="capture">📸 Capture</button>
+        <button data-tab="camera">🎥 Live</button>
       </div>
     </div>
 
-    <!-- ── Warning Banner ── -->
     <div class="warning-banner container" id="warningBanner"></div>
 
     <div class="container">
@@ -835,8 +1010,7 @@
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
-              d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25
-        2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
+              d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
             />
           </svg>
           <h3>Drag & drop your image here</h3>
@@ -855,7 +1029,57 @@
         </div>
       </div>
 
-      <!-- ── Camera Panel ── -->
+      <!-- ── Capture Panel (NEW) ── -->
+      <div id="panel-capture" class="panel">
+        <div class="capture-container">
+          <div class="capture-video-wrap" id="captureVideoWrap">
+            <video id="captureVideo" autoplay playsinline muted></video>
+            <canvas id="captureCanvas"></canvas>
+            <button class="cam-switch" id="switchCamBtn" title="Switch Camera">
+              🔄
+            </button>
+          </div>
+          <div class="capture-preview" id="capturePreview">
+            <img id="capturedImg" src="" alt="Captured" />
+          </div>
+          <div class="capture-btns" id="captureBtns">
+            <button class="btn btn-outline" id="openCaptureBtn">
+              📷 Open Camera
+            </button>
+          </div>
+          <div
+            class="capture-btns"
+            id="captureShutterWrap"
+            style="display: none"
+          >
+            <button
+              class="shutter-btn"
+              id="shutterBtn"
+              title="Take Photo"
+            ></button>
+          </div>
+          <div
+            class="capture-btns"
+            id="captureActionBtns"
+            style="display: none"
+          >
+            <button class="btn btn-primary" id="captureScanBtn">
+              ⚡ Scan This Photo
+            </button>
+            <button class="btn btn-deep" id="captureDeepBtn">
+              🧠 Deep Scan
+            </button>
+            <button class="btn btn-outline" id="captureRetakeBtn">
+              🔄 Retake
+            </button>
+          </div>
+          <p class="capture-hint" id="captureHint">
+            Open your camera and point at the affected plant to capture a photo.
+          </p>
+        </div>
+      </div>
+
+      <!-- ── Live Camera Panel ── -->
       <div id="panel-camera" class="panel">
         <div class="cam-container">
           <div class="cam-feed">
@@ -872,16 +1096,14 @@
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0
-           1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0
-           2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25
-           0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z"
+                  d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z"
                 />
               </svg>
               <span>Camera feed will appear here</span>
             </div>
             <img id="camStream" src="" alt="Camera" style="display: none" />
             <div class="live-dot" id="liveDot"><i></i> LIVE</div>
+            <div class="fps-badge" id="fpsBadge">-- FPS</div>
           </div>
           <div class="cam-sidebar" id="camSidebar">
             <div class="empty-state" id="camEmpty">
@@ -889,16 +1111,21 @@
             </div>
           </div>
         </div>
-        <div class="cam-btns">
+        <div class="cam-controls">
           <button class="btn btn-primary" id="startCam">▶ Start Camera</button>
           <button class="btn btn-outline" id="stopCam" style="display: none">
             ■ Stop
           </button>
+          <div class="conf-selector" id="confSelector" style="display: none">
+            <button class="conf-btn" data-level="1">All</button>
+            <button class="conf-btn active" data-level="2">Confident</button>
+            <button class="conf-btn" data-level="3">Very High</button>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- ── Results ── -->
+    <!-- Results -->
     <section class="results container" id="resultsSection">
       <h2>
         Detection Results <span class="count" id="resCount"></span>
@@ -912,13 +1139,13 @@
       </div>
     </section>
 
-    <!-- ── Loader ── -->
+    <!-- Loader -->
     <div class="loader-overlay" id="loader">
       <div class="spinner"></div>
       <p id="loaderText">Analyzing image for pests…</p>
     </div>
 
-    <!-- ── History Modal ── -->
+    <!-- History Modal -->
     <div class="modal-overlay" id="historyModal">
       <div class="modal">
         <h2>
@@ -944,7 +1171,7 @@
     </footer>
 
     <script>
-      /* ── Crop Selection ──────────────────────────── */
+      /* ── Crop Selection ────────────────────────── */
       let selectedCrop = "Unknown";
       document.querySelectorAll(".crop-chip").forEach((chip) => {
         chip.addEventListener("click", () => {
@@ -956,21 +1183,28 @@
         });
       });
 
-      /* ── Tab Switching ───────────────────────────── */
-      const tabs = document.querySelectorAll(".tabs button");
-      const panels = document.querySelectorAll(".panel");
-      tabs.forEach((btn) => {
+      /* ── Tab Switching ─────────────────────────── */
+      document.querySelectorAll(".tabs button").forEach((btn) => {
         btn.addEventListener("click", () => {
-          tabs.forEach((b) => b.classList.remove("active"));
-          panels.forEach((p) => p.classList.remove("active"));
+          document
+            .querySelectorAll(".tabs button")
+            .forEach((b) => b.classList.remove("active"));
+          document
+            .querySelectorAll(".panel")
+            .forEach((p) => p.classList.remove("active"));
           btn.classList.add("active");
           document
             .getElementById("panel-" + btn.dataset.tab)
             .classList.add("active");
+
+          // Stop capture camera when switching away
+          if (btn.dataset.tab !== "capture" && captureStream) {
+            stopCaptureCamera();
+          }
         });
       });
 
-      /* ── Upload / Drag-Drop ──────────────────────── */
+      /* ── Upload / Drag-Drop ────────────────────── */
       const dropZone = document.getElementById("dropZone");
       const fileInput = document.getElementById("fileInput");
       const previewWrap = document.getElementById("previewWrap");
@@ -1014,7 +1248,7 @@
         document.getElementById("warningBanner").classList.remove("show");
       });
 
-      /* ── Helpers ─────────────────────────────────── */
+      /* ── Helpers ───────────────────────────────── */
       function severityBadge(level) {
         const map = {
           low: { bg: "rgba(34,197,94,0.12)", cl: "#22c55e", icon: "🟢" },
@@ -1023,8 +1257,7 @@
           unknown: { bg: "rgba(161,161,170,0.12)", cl: "#a1a1aa", icon: "⚪" },
         };
         const c = map[level] || map["unknown"];
-        return `<span style="font-size:0.75rem;padding:3px 10px;border-radius:20px;
-                background:${c.bg};color:${c.cl};font-weight:600;">${c.icon} ${level}</span>`;
+        return `<span style="font-size:0.75rem;padding:3px 10px;border-radius:20px;background:${c.bg};color:${c.cl};font-weight:600;">${c.icon} ${level}</span>`;
       }
 
       function verifiedBadge(status) {
@@ -1032,12 +1265,17 @@
           verified: {
             bg: "rgba(34,197,94,0.15)",
             cl: "#22c55e",
-            txt: "✓ AI Verified",
+            txt: "✓ Verified",
           },
           "high-confidence": {
             bg: "rgba(34,197,94,0.15)",
             cl: "#22c55e",
             txt: "✓ High Conf",
+          },
+          stable: {
+            bg: "rgba(34,197,94,0.15)",
+            cl: "#22c55e",
+            txt: "✓ Stable",
           },
           corrected: {
             bg: "rgba(245,158,11,0.15)",
@@ -1048,6 +1286,11 @@
             bg: "rgba(59,130,246,0.15)",
             cl: "#3b82f6",
             txt: "🧠 Deep",
+          },
+          capture: {
+            bg: "rgba(249,115,22,0.15)",
+            cl: "#f97316",
+            txt: "📸 Capture",
           },
           live: { bg: "rgba(239,68,68,0.12)", cl: "#ef4444", txt: "● Live" },
           unverified: {
@@ -1060,64 +1303,73 @@
         return `<span class="verified-badge" style="background:${c.bg};color:${c.cl};">${c.txt}</span>`;
       }
 
+      function stabilityDots(framesSeen) {
+        const max = 10,
+          filled = Math.min(framesSeen || 0, max);
+        let dots = "";
+        for (let i = 0; i < max; i++)
+          dots += `<span class="${i < filled ? "filled" : ""}"></span>`;
+        return `<div class="stability-bar"><div class="stability-dots">${dots}</div><span>Stability: ${filled}/${max}</span></div>`;
+      }
+
       function infoRow(icon, label, value, color) {
         if (!value) return "";
-        return `
-          <div style="display:flex;gap:10px;align-items:start;padding:7px 0;
-                      border-bottom:1px solid rgba(255,255,255,0.04);">
-            <span style="font-size:1rem;flex-shrink:0;margin-top:1px;">${icon}</span>
-            <div style="font-size:0.82rem;line-height:1.5;">
-              <span style="color:#71717a;font-weight:600;">${label}</span><br>
-              <span style="color:${color || "#d4d4d8"};font-weight:500;">${value}</span>
-            </div>
-          </div>`;
+        return `<div style="display:flex;gap:10px;align-items:start;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+      <span style="font-size:1rem;flex-shrink:0;margin-top:1px;">${icon}</span>
+      <div style="font-size:0.82rem;line-height:1.5;">
+        <span style="color:#71717a;font-weight:600;">${label}</span><br>
+        <span style="color:${color || "#d4d4d8"};font-weight:500;">${value}</span>
+      </div>
+    </div>`;
       }
 
-      function buildCardHTML(d) {
+      function buildCardHTML(d, showStability) {
         return `
-        <div class="det-card">
-          <div class="top">
-            <div>
-              <span class="pest-name">${d.common_name || d.name}</span>
-              ${verifiedBadge(d.verified || "unverified")}
-              <span style="display:block;font-size:0.72rem;color:#71717a;margin-top:2px;
-                           font-style:italic;">${d.name}</span>
-              ${d.gemini_note ? `<span style="display:block;font-size:0.72rem;color:#f59e0b;margin-top:4px;">⚠ ${d.gemini_note}</span>` : ""}
-            </div>
-            <span style="display:flex;gap:8px;align-items:center;">
-              ${severityBadge(d.severity || "unknown")}
-              <span class="pest-count">×${d.count}</span>
-            </span>
-          </div>
-          <div class="conf-bar"><div class="conf-fill" style="width:${d.confidence}%"></div></div>
-          <div class="meta">
-            <span>Confidence: <strong>${d.confidence}%</strong></span>
-            ${d.crops_at_risk ? `<span>Crops: <strong>${d.crops_at_risk}</strong></span>` : ""}
-          </div>
-          <div style="margin-top:10px;">
-            ${infoRow("⚡", "URGENT ACTION", d.quick_action, "#fbbf24")}
-            ${infoRow("💀", "DAMAGE", d.damage, "#f87171")}
-            ${infoRow("🔍", "HOW TO IDENTIFY", d.identify, "#d4d4d8")}
-            ${infoRow("💊", "CHEMICAL TREATMENT", d.chemical, "#22c55e")}
-            ${infoRow("🌿", "ORGANIC REMEDY", d.organic, "#a3e635")}
-            ${infoRow("🛡️", "PREVENTION", d.prevention, "#93c5fd")}
-          </div>
-        </div>`;
+    <div class="det-card">
+      <div class="top">
+        <div>
+          <span class="pest-name">${d.common_name || d.name}</span>
+          ${verifiedBadge(d.verified || "unverified")}
+          <span style="display:block;font-size:0.72rem;color:#71717a;margin-top:2px;font-style:italic;">${d.name}</span>
+          ${d.gemini_note ? `<span style="display:block;font-size:0.72rem;color:#f59e0b;margin-top:4px;">⚠ ${d.gemini_note}</span>` : ""}
+        </div>
+        <span style="display:flex;gap:8px;align-items:center;">
+          ${severityBadge(d.severity || "unknown")}
+          <span class="pest-count">×${d.count}</span>
+        </span>
+      </div>
+      <div class="conf-bar"><div class="conf-fill" style="width:${d.confidence}%"></div></div>
+      <div class="meta">
+        <span>Confidence: <strong>${d.confidence}%</strong></span>
+        ${d.best_confidence ? `<span>Peak: <strong>${d.best_confidence}%</strong></span>` : ""}
+        ${d.crops_at_risk ? `<span>Crops: <strong>${d.crops_at_risk}</strong></span>` : ""}
+      </div>
+      ${showStability && d.frames_seen ? stabilityDots(d.frames_seen) : ""}
+      <div style="margin-top:8px;">
+        ${infoRow("⚡", "URGENT ACTION", d.quick_action, "#fbbf24")}
+        ${infoRow("💀", "DAMAGE", d.damage, "#f87171")}
+        ${infoRow("🔍", "HOW TO IDENTIFY", d.identify, "#d4d4d8")}
+        ${infoRow("💊", "CHEMICAL", d.chemical, "#22c55e")}
+        ${infoRow("🌿", "ORGANIC", d.organic, "#a3e635")}
+        ${infoRow("🛡️", "PREVENTION", d.prevention, "#93c5fd")}
+      </div>
+    </div>`;
       }
 
-      /* ── Scan Function ───────────────────────────── */
-      async function runScan(endpoint, loaderMsg, badgeText, badgeColor) {
-        if (!selectedFile) return;
+      /* ── Scan (Upload) ─────────────────────────── */
+      async function runScan(
+        endpoint,
+        loaderMsg,
+        badgeText,
+        badgeColor,
+        formData,
+      ) {
         const loader = document.getElementById("loader");
         document.getElementById("loaderText").textContent = loaderMsg;
         loader.classList.add("show");
 
-        const form = new FormData();
-        form.append("image", selectedFile);
-        form.append("crop", selectedCrop);
-
         try {
-          const res = await fetch(endpoint, { method: "POST", body: form });
+          const res = await fetch(endpoint, { method: "POST", body: formData });
           const data = await res.json();
           loader.classList.remove("show");
           if (data.error) {
@@ -1125,7 +1377,6 @@
             return;
           }
 
-          // Show warning if image doesn't look like a plant
           const banner = document.getElementById("warningBanner");
           if (data.warning) {
             banner.textContent = "⚠️ " + data.warning;
@@ -1147,22 +1398,33 @@
       }
 
       document.getElementById("analyzeBtn").addEventListener("click", () => {
-        runScan("/detect", "Scanning + AI verifying…", "⚡ Quick Scan", {
-          bg: "rgba(34,197,94,0.15)",
-          cl: "#22c55e",
-        });
+        if (!selectedFile) return;
+        const form = new FormData();
+        form.append("image", selectedFile);
+        form.append("crop", selectedCrop);
+        runScan(
+          "/detect",
+          "Scanning + AI verifying…",
+          "⚡ Quick Scan",
+          { bg: "rgba(34,197,94,0.15)", cl: "#22c55e" },
+          form,
+        );
       });
 
       document.getElementById("deepScanBtn").addEventListener("click", () => {
+        if (!selectedFile) return;
+        const form = new FormData();
+        form.append("image", selectedFile);
+        form.append("crop", selectedCrop);
         runScan(
           "/detect_deep",
           "Running deep multi-scale analysis…",
           "🧠 Deep Scan",
           { bg: "rgba(59,130,246,0.15)", cl: "#3b82f6" },
+          form,
         );
       });
 
-      /* ── Show Results ────────────────────────────── */
       function showResults(imgUrl, detections) {
         document.getElementById("resultImg").src = imgUrl;
         const section = document.getElementById("resultsSection");
@@ -1172,54 +1434,309 @@
 
         if (!detections.length) {
           cards.innerHTML = `<div class="no-det">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                 stroke-width="1.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            <p>No pests detected — crop looks healthy! 🌱</p></div>`;
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <p>No pests detected — crop looks healthy! 🌱</p></div>`;
           counter.textContent = "0 pests";
         } else {
           let total = detections.reduce((s, d) => s + d.count, 0);
           counter.textContent =
             total + " pest" + (total > 1 ? "s" : "") + " found";
           detections.forEach((d) => {
-            cards.innerHTML += buildCardHTML(d);
+            cards.innerHTML += buildCardHTML(d, false);
           });
         }
         section.classList.add("show");
         section.scrollIntoView({ behavior: "smooth", block: "start" });
       }
 
-      /* ── Live Camera ─────────────────────────────── */
+      /* ══════════════════════════════════════════════
+     📸 CAPTURE TAB — Browser Camera (Phone/Laptop)
+     ══════════════════════════════════════════════ */
+      let captureStream = null;
+      let currentFacingMode = "environment"; // "environment" = back camera, "user" = front
+      let capturedBase64 = null;
+
+      const captureVideo = document.getElementById("captureVideo");
+      const captureCanvas = document.getElementById("captureCanvas");
+      const captureVideoWrap = document.getElementById("captureVideoWrap");
+      const capturePreview = document.getElementById("capturePreview");
+      const capturedImg = document.getElementById("capturedImg");
+      const captureHint = document.getElementById("captureHint");
+
+      async function startCaptureCamera(facingMode) {
+        // Stop existing stream
+        if (captureStream) {
+          captureStream.getTracks().forEach((t) => t.stop());
+        }
+
+        try {
+          captureStream = await navigator.mediaDevices.getUserMedia({
+            video: {
+              facingMode: facingMode,
+              width: { ideal: 1920 },
+              height: { ideal: 1080 },
+            },
+            audio: false,
+          });
+
+          captureVideo.srcObject = captureStream;
+          captureVideo.style.display = "block";
+          captureVideoWrap.style.display = "block";
+          capturePreview.style.display = "none";
+          document.getElementById("captureBtns").style.display = "none";
+          document.getElementById("captureShutterWrap").style.display = "flex";
+          document.getElementById("captureActionBtns").style.display = "none";
+          captureHint.textContent =
+            "Point at the affected plant and tap the shutter button.";
+
+          currentFacingMode = facingMode;
+        } catch (err) {
+          console.error("Camera error:", err);
+
+          // If back camera fails, try front camera
+          if (facingMode === "environment") {
+            try {
+              captureStream = await navigator.mediaDevices.getUserMedia({
+                video: {
+                  facingMode: "user",
+                  width: { ideal: 1920 },
+                  height: { ideal: 1080 },
+                },
+                audio: false,
+              });
+              captureVideo.srcObject = captureStream;
+              captureVideo.style.display = "block";
+              captureVideoWrap.style.display = "block";
+              capturePreview.style.display = "none";
+              document.getElementById("captureBtns").style.display = "none";
+              document.getElementById("captureShutterWrap").style.display =
+                "flex";
+              document.getElementById("captureActionBtns").style.display =
+                "none";
+              captureHint.textContent =
+                "Using front camera. Point at the plant.";
+              currentFacingMode = "user";
+              return;
+            } catch (e) {
+              // Both cameras failed
+            }
+          }
+
+          captureVideoWrap.innerHTML = `
+        <div class="camera-error">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/>
+          </svg>
+          <p><strong>Camera access denied or not available.</strong></p>
+          <p style="margin-top:8px;font-size:0.82rem;color:var(--txt3);">
+            Make sure you're using <strong>HTTPS</strong> and have granted camera permissions.<br>
+            On phone: open <strong>https://${window.location.hostname}:5000</strong>
+          </p>
+        </div>`;
+          captureHint.textContent = "";
+        }
+      }
+
+      function stopCaptureCamera() {
+        if (captureStream) {
+          captureStream.getTracks().forEach((t) => t.stop());
+          captureStream = null;
+        }
+        captureVideo.srcObject = null;
+        captureVideo.style.display = "block";
+        capturePreview.style.display = "none";
+        document.getElementById("captureBtns").style.display = "flex";
+        document.getElementById("captureShutterWrap").style.display = "none";
+        document.getElementById("captureActionBtns").style.display = "none";
+        captureHint.textContent =
+          "Open your camera and point at the affected plant to capture a photo.";
+      }
+
+      // Open Camera button
+      document
+        .getElementById("openCaptureBtn")
+        .addEventListener("click", () => {
+          startCaptureCamera("environment");
+        });
+
+      // Switch camera (front/back)
+      document.getElementById("switchCamBtn").addEventListener("click", () => {
+        const newMode =
+          currentFacingMode === "environment" ? "user" : "environment";
+        startCaptureCamera(newMode);
+      });
+
+      // Shutter button — take photo
+      document.getElementById("shutterBtn").addEventListener("click", () => {
+        if (!captureStream) return;
+
+        // Set canvas to video dimensions
+        captureCanvas.width = captureVideo.videoWidth;
+        captureCanvas.height = captureVideo.videoHeight;
+        const ctx = captureCanvas.getContext("2d");
+
+        // If front camera, mirror the image
+        if (currentFacingMode === "user") {
+          ctx.translate(captureCanvas.width, 0);
+          ctx.scale(-1, 1);
+        }
+
+        ctx.drawImage(captureVideo, 0, 0);
+
+        // Convert to base64
+        capturedBase64 = captureCanvas.toDataURL("image/jpeg", 0.92);
+        capturedImg.src = capturedBase64;
+
+        // Show preview, hide video
+        captureVideo.style.display = "none";
+        capturePreview.style.display = "block";
+        document.getElementById("captureShutterWrap").style.display = "none";
+        document.getElementById("captureActionBtns").style.display = "flex";
+        captureHint.textContent = "Photo captured! Scan it or retake.";
+
+        // Stop camera to save battery
+        if (captureStream) {
+          captureStream.getTracks().forEach((t) => t.stop());
+          captureStream = null;
+        }
+      });
+
+      // Retake button
+      document
+        .getElementById("captureRetakeBtn")
+        .addEventListener("click", () => {
+          capturedBase64 = null;
+          startCaptureCamera(currentFacingMode);
+        });
+
+      // Scan captured photo (Quick)
+      document
+        .getElementById("captureScanBtn")
+        .addEventListener("click", async () => {
+          if (!capturedBase64) return;
+          const loader = document.getElementById("loader");
+          document.getElementById("loaderText").textContent =
+            "Analyzing captured photo…";
+          loader.classList.add("show");
+
+          try {
+            const res = await fetch("/detect_capture", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                image: capturedBase64,
+                crop: selectedCrop,
+              }),
+            });
+            const data = await res.json();
+            loader.classList.remove("show");
+            if (data.error) {
+              alert(data.error);
+              return;
+            }
+
+            const banner = document.getElementById("warningBanner");
+            if (data.warning) {
+              banner.textContent = "⚠️ " + data.warning;
+              banner.classList.add("show");
+            } else {
+              banner.classList.remove("show");
+            }
+
+            const badge = document.getElementById("scanType");
+            badge.textContent = "📸 Capture Scan";
+            badge.style.background = "rgba(249,115,22,0.15)";
+            badge.style.color = "#f97316";
+
+            showResults(data.result_image_url, data.detections);
+          } catch (err) {
+            loader.classList.remove("show");
+            alert("Scan failed: " + err.message);
+          }
+        });
+
+      // Deep scan captured photo
+      document
+        .getElementById("captureDeepBtn")
+        .addEventListener("click", async () => {
+          if (!capturedBase64) return;
+
+          // Convert base64 to File and use existing deep scan
+          const res = await fetch(capturedBase64);
+          const blob = await res.blob();
+          const file = new File([blob], "capture.jpg", { type: "image/jpeg" });
+
+          const form = new FormData();
+          form.append("image", file);
+          form.append("crop", selectedCrop);
+
+          runScan(
+            "/detect_deep",
+            "Deep scanning captured photo…",
+            "🧠 Deep Capture",
+            { bg: "rgba(59,130,246,0.15)", cl: "#3b82f6" },
+            form,
+          );
+        });
+
+      /* ── Live Camera ───────────────────────────── */
       const startBtn = document.getElementById("startCam");
       const stopBtn = document.getElementById("stopCam");
       const camStream = document.getElementById("camStream");
       const camPlace = document.getElementById("camPlaceholder");
       const liveDot = document.getElementById("liveDot");
+      const fpsBadge = document.getElementById("fpsBadge");
       const camSide = document.getElementById("camSidebar");
-      let polling = null;
+      const confSelector = document.getElementById("confSelector");
+      let polling = null,
+        fpsInterval = null,
+        frameCount = 0;
 
-      startBtn.addEventListener("click", () => {
-        camStream.src = "/video_feed";
+      startBtn.addEventListener("click", async () => {
+        await fetch("/start_camera");
+        camStream.src = "/video_feed?" + Date.now();
         camStream.style.display = "block";
         camPlace.style.display = "none";
         liveDot.style.display = "flex";
+        fpsBadge.style.display = "block";
+        confSelector.style.display = "flex";
         startBtn.style.display = "none";
         stopBtn.style.display = "inline-flex";
         document.getElementById("camEmpty").style.display = "none";
-        polling = setInterval(pollDetections, 1500);
+        polling = setInterval(pollDetections, 1000);
+        frameCount = 0;
+        camStream.onload = () => frameCount++;
+        fpsInterval = setInterval(() => {
+          fpsBadge.textContent = frameCount + " FPS";
+          frameCount = 0;
+        }, 1000);
       });
 
-      stopBtn.addEventListener("click", () => {
+      stopBtn.addEventListener("click", async () => {
+        await fetch("/stop_camera");
         camStream.src = "";
         camStream.style.display = "none";
         camPlace.style.display = "flex";
         liveDot.style.display = "none";
+        fpsBadge.style.display = "none";
+        confSelector.style.display = "none";
         stopBtn.style.display = "none";
         startBtn.style.display = "inline-flex";
         clearInterval(polling);
+        clearInterval(fpsInterval);
         camSide.innerHTML = '<div class="empty-state">Camera stopped.</div>';
+      });
+
+      document.querySelectorAll(".conf-btn").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          document
+            .querySelectorAll(".conf-btn")
+            .forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          await fetch("/set_confidence/" + btn.dataset.level);
+        });
       });
 
       async function pollDetections() {
@@ -1236,92 +1753,59 @@
             '<div class="empty-state">Scanning… No pests detected yet.</div>';
           return;
         }
-        let html =
-          '<div style="font-weight:700;font-size:1rem;margin-bottom:8px">🔴 Live Detections</div>';
+        let html = `<div style="font-weight:700;font-size:0.95rem;margin-bottom:8px;display:flex;justify-content:space-between;">
+      <span>🔴 Live Detections</span><span style="font-size:0.75rem;color:var(--txt3);">${dets.length} tracked</span></div>`;
         dets.forEach((d) => {
-          html += buildCardHTML(d);
+          html += buildCardHTML(d, true);
         });
         camSide.innerHTML = html;
       }
 
-      /* ── History Modal ───────────────────────────── */
+      /* ── History ───────────────────────────────── */
       document
         .getElementById("historyBtn")
         .addEventListener("click", async () => {
-          const modal = document.getElementById("historyModal");
-          modal.classList.add("show");
-
-          // Load stats
+          document.getElementById("historyModal").classList.add("show");
           try {
-            const statsRes = await fetch("/history/stats");
-            const stats = await statsRes.json();
-
+            const s = await (await fetch("/history/stats")).json();
             document.getElementById("statsGrid").innerHTML = `
-            <div class="stat-card">
-              <div class="num">${stats.total_detections}</div>
-              <div class="label">Total Detections</div>
-            </div>
-            <div class="stat-card">
-              <div class="num">${stats.top_pests.length > 0 ? stats.top_pests[0].name : "None"}</div>
-              <div class="label">Most Common Pest</div>
-            </div>
-            <div class="stat-card">
-              <div class="num" style="color:${
-                (stats.severity_breakdown.high || 0) > 5
-                  ? "var(--red)"
-                  : "var(--green)"
-              }">${stats.severity_breakdown.high || 0}</div>
-              <div class="label">High Severity</div>
-            </div>
-          `;
+        <div class="stat-card"><div class="num">${s.total_detections}</div><div class="label">Total</div></div>
+        <div class="stat-card"><div class="num">${s.top_pests.length > 0 ? s.top_pests[0].name : "None"}</div><div class="label">Most Common</div></div>
+        <div class="stat-card"><div class="num" style="color:${(s.severity_breakdown.high || 0) > 5 ? "var(--red)" : "var(--green)"}">${s.severity_breakdown.high || 0}</div><div class="label">High Severity</div></div>`;
           } catch (_) {}
-
-          // Load history list
           try {
-            const histRes = await fetch("/history");
-            const data = await histRes.json();
+            const data = await (await fetch("/history")).json();
             const list = document.getElementById("historyList");
-
             if (!data.history.length) {
               list.innerHTML =
-                '<div style="text-align:center;color:var(--txt3);padding:20px;">No detection history yet.</div>';
+                '<div style="text-align:center;color:var(--txt3);padding:20px;">No history yet.</div>';
             } else {
               list.innerHTML = data.history
                 .map(
-                  (h) => `
-              <div class="history-item">
-                <div class="pest-info">
-                  <span class="name">${h.common_name}</span>
-                  <span class="date">${h.timestamp} · ${h.crop}</span>
-                </div>
-                <div class="right">
-                  ${severityBadge(h.severity)}
-                  <div style="font-size:0.75rem;color:var(--txt3);margin-top:4px;">${h.confidence}%</div>
-                </div>
-              </div>`,
+                  (h) =>
+                    `<div class="history-item"><div class="pest-info"><span class="name">${h.common_name}</span><span class="date">${h.timestamp} · ${h.crop}</span></div><div style="text-align:right">${severityBadge(h.severity)}<div style="font-size:0.75rem;color:var(--txt3);margin-top:4px;">${h.confidence}%</div></div></div>`,
                 )
                 .join("");
             }
           } catch (_) {}
         });
 
-      document.getElementById("closeHistory").addEventListener("click", () => {
-        document.getElementById("historyModal").classList.remove("show");
-      });
-
+      document
+        .getElementById("closeHistory")
+        .addEventListener("click", () =>
+          document.getElementById("historyModal").classList.remove("show"),
+        );
       document.getElementById("historyModal").addEventListener("click", (e) => {
-        if (e.target === e.currentTarget) {
+        if (e.target === e.currentTarget)
           e.currentTarget.classList.remove("show");
-        }
       });
-
       document
         .getElementById("clearHistoryBtn")
         .addEventListener("click", async () => {
-          if (confirm("Clear all detection history?")) {
+          if (confirm("Clear all history?")) {
             await fetch("/history/clear", { method: "POST" });
             document.getElementById("historyList").innerHTML =
-              '<div style="text-align:center;color:var(--txt3);padding:20px;">History cleared.</div>';
+              '<div style="text-align:center;color:var(--txt3);padding:20px;">Cleared.</div>';
             document.getElementById("statsGrid").innerHTML = "";
           }
         });
