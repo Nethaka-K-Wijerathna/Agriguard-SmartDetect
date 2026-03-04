@@ -17,7 +17,7 @@ app = Flask(__name__)
 # ==========================================
 # 1. GEMINI AI SETUP
 # ==========================================
-GEMINI_API_KEY = "AIzaSyCaaKF0NSsFyasMJTVe19Ai4P6DUKWWyTs"
+GEMINI_API_KEY = "AIzaSyB6zPepWLHT5nx6GWcX-ZIwiUrHFTvwEkc"
 genai.configure(api_key=GEMINI_API_KEY)
 
 working_model_name = "models/gemini-1.5-flash"
@@ -223,7 +223,7 @@ os.makedirs(os.path.join("static", "uploads"), exist_ok=True)
 print("Loading YOLO model...")
 device = "cuda" if torch.cuda.is_available() else "cpu"
 try:
-    model = YOLO("last.pt")
+    model = YOLO("best13C.pt")
     model.to(device)
     if device == "cuda":
         model.model.half()
